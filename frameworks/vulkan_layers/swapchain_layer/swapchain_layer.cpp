@@ -1176,44 +1176,49 @@ void InitRegionRect(const VkRectLayerKHR* layer, struct Region::Rect* rect, int3
 
 void SetMetaData(Swapchain &swapchain, Swapchain::Image &img, NativeWindow* window)
 {
-    if (swapchain.pStaticMetadata != nullptr) {
-        OH_NativeBuffer_MetadataType metadataType;
-        OH_NativeBuffer_ColorSpace colorSpace;
-        OH_NativeBuffer *nbuffer = img.buffer->sfbuffer->SurfaceBufferToNativeBuffer();
-        int err = 0;
-        if (OH_NativeWindow_GetColorSpace(window, &colorSpace) == OHOS::GSERROR_OK) {
-            metadataType = colorSpace == OH_COLORSPACE_BT2020_HLG_FULL ?
-                OH_NativeBuffer_MetadataType::OH_VIDEO_HDR_HLG : OH_NativeBuffer_MetadataType::OH_VIDEO_HDR_HDR10;
+    if (swapchain.pStaticMetadata == nullptr) {
+        return;
+    }
+    OH_NativeBuffer_MetadataType metadataType;
+    OH_NativeBuffer_ColorSpace colorSpace;
+    if (img.buffer == nullptr || img.buffer->sfbuffer == nullptr) {
+        SWLOGE("Image buffer or sfbuffer is null");
+        return;
+    }
+    OH_NativeBuffer *nbuffer = img.buffer->sfbuffer->SurfaceBufferToNativeBuffer();
+    int err = 0;
+    if (OH_NativeWindow_GetColorSpace(window, &colorSpace) == OHOS::GSERROR_OK) {
+        metadataType = colorSpace == OH_COLORSPACE_BT2020_HLG_FULL ?
+            OH_NativeBuffer_MetadataType::OH_VIDEO_HDR_HLG : OH_NativeBuffer_MetadataType::OH_VIDEO_HDR_HDR10;
 
-            err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_METADATA_TYPE,
-                sizeof(metadataType), reinterpret_cast<uint8_t*>(&metadataType));
-            if (err != OHOS::GSERROR_OK) {
-                SWLOGE("NativeWindow set HDR metadata type failed, error num : %{public}d", err);
-            }
-
-            err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_STATIC_METADATA,
-                sizeof(OH_NativeBuffer_StaticMetadata), reinterpret_cast<uint8_t*>(swapchain.pStaticMetadata));
-            if (err != OHOS::GSERROR_OK) {
-                SWLOGE("NativeWindow set HDR static metadata failed, error num : %{public}d", err);
-            }
+        err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_METADATA_TYPE,
+            sizeof(metadataType), reinterpret_cast<uint8_t*>(&metadataType));
+        if (err != OHOS::GSERROR_OK) {
+            SWLOGE("NativeWindow set HDR metadata type failed, error num : %{public}d", err);
         }
 
-        if (swapchain.pDynamicMetadata != nullptr) {
-            metadataType = OH_NativeBuffer_MetadataType::OH_VIDEO_HDR_VIVID;
-            err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_METADATA_TYPE,
-                sizeof(metadataType), reinterpret_cast<uint8_t*>(&metadataType));
-            if (err != OHOS::GSERROR_OK) {
-                SWLOGE("NativeWindow set HDR vivid metadata type failed, error num : %{public}d", err);
-            }
-
-            err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_DYNAMIC_METADATA,
-                swapchain.dynamicMetadataSize, swapchain.pDynamicMetadata);
-            if (err != OHOS::GSERROR_OK) {
-                SWLOGE("NativeWindow set HDR dynamic metadata failed, error num : %{public}d", err);
-            }
+        err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_STATIC_METADATA,
+            sizeof(OH_NativeBuffer_StaticMetadata), reinterpret_cast<uint8_t*>(swapchain.pStaticMetadata));
+        if (err != OHOS::GSERROR_OK) {
+            SWLOGE("NativeWindow set HDR static metadata failed, error num : %{public}d", err);
         }
     }
-    return;
+
+    if (swapchain.pDynamicMetadata == nullptr) {
+        return;
+    }
+    metadataType = OH_NativeBuffer_MetadataType::OH_VIDEO_HDR_VIVID;
+    err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_METADATA_TYPE,
+        sizeof(metadataType), reinterpret_cast<uint8_t*>(&metadataType));
+    if (err != OHOS::GSERROR_OK) {
+        SWLOGE("NativeWindow set HDR vivid metadata type failed, error num : %{public}d", err);
+    }
+
+    err = OH_NativeBuffer_SetMetadataValue(nbuffer, OH_HDR_DYNAMIC_METADATA,
+        swapchain.dynamicMetadataSize, swapchain.pDynamicMetadata);
+    if (err != OHOS::GSERROR_OK) {
+        SWLOGE("NativeWindow set HDR dynamic metadata failed, error num : %{public}d", err);
+    }
 }
 
 VkResult FlushBuffer(const VkPresentRegionKHR* region, struct Region::Rect* rects,
@@ -1457,41 +1462,54 @@ VKAPI_ATTR void VKAPI_CALL SetHdrMetadataEXT(
     }
     // Search for vivid dynamic metadata
     const void* pNextChain = pMetadata->pNext;
+    const VkHdrVividDynamicMetadataHUAWEI* pHdrVividMetadata = nullptr;
     while (pNextChain != nullptr) {
-        if (reinterpret_cast<const VkHdrVividDynamicMetadataHUAWEI*>(pNextChain)->sType ==
-                VK_STRUCTURE_TYPE_HDR_VIVID_DYNAMIC_METADATA_HUAWEI) {
+        const VkBaseInStructure* base = reinterpret_cast<const VkBaseInStructure*>(pNextChain);
+        if (base->sType == VK_STRUCTURE_TYPE_HDR_VIVID_DYNAMIC_METADATA_HUAWEI) {
+            pHdrVividMetadata = reinterpret_cast<const VkHdrVividDynamicMetadataHUAWEI*>(base);
             break;
-        } else {
-            pNextChain = reinterpret_cast<const VkHdrVividDynamicMetadataHUAWEI*>(pNextChain)->pNext;
         }
+        pNextChain = base->pNext;
     }
-    const VkHdrVividDynamicMetadataHUAWEI* pHdrVividMetadata =
-        reinterpret_cast<const VkHdrVividDynamicMetadataHUAWEI*>(pNextChain);
 
     for (uint32_t index = 0; index < swapchainCount; index++) {
         Swapchain* swapchain = SwapchainFromHandle(pSwapchains[index]);
         // Allocate memory
         if (swapchain->pStaticMetadata == nullptr) {
-            swapchain->pStaticMetadata = new OH_NativeBuffer_StaticMetadata();
+            swapchain->pStaticMetadata = new (std::nothrow) OH_NativeBuffer_StaticMetadata();
+            if (swapchain->pStaticMetadata == nullptr) {
+                SWLOGE("Failed to allocate static metadata");
+                return;
+            }
         }
         if (pHdrVividMetadata != nullptr && swapchain->pDynamicMetadata != nullptr &&
                 swapchain->dynamicMetadataSize != pHdrVividMetadata->dynamicMetadataSize) {
             swapchain->dynamicMetadataSize = pHdrVividMetadata->dynamicMetadataSize;
             delete[] swapchain->pDynamicMetadata;
-            swapchain->pDynamicMetadata = new uint8_t[pHdrVividMetadata->dynamicMetadataSize];
+            swapchain->pDynamicMetadata = new (std::nothrow) uint8_t[pHdrVividMetadata->dynamicMetadataSize];
+            if (swapchain->pDynamicMetadata == nullptr) {
+                SWLOGE("Failed to allocate dynamic metadata");
+                swapchain->dynamicMetadataSize = 0;
+                return;
+            }
         } else if (pHdrVividMetadata != nullptr && swapchain->pDynamicMetadata == nullptr) {
             swapchain->dynamicMetadataSize = pHdrVividMetadata->dynamicMetadataSize;
-            swapchain->pDynamicMetadata = new uint8_t[pHdrVividMetadata->dynamicMetadataSize];
+            swapchain->pDynamicMetadata = new (std::nothrow) uint8_t[pHdrVividMetadata->dynamicMetadataSize];
+            if (swapchain->pDynamicMetadata == nullptr) {
+                SWLOGE("Failed to allocate dynamic metadata");
+                swapchain->dynamicMetadataSize = 0;
+                return;
+            }
         }
 
         // Set static metadata into swapchain
         swapchain->pStaticMetadata->smpte2086.displayPrimaryRed.x = pMetadata->displayPrimaryRed.x;
         swapchain->pStaticMetadata->smpte2086.displayPrimaryRed.y = pMetadata->displayPrimaryRed.y;
-        swapchain->pStaticMetadata->smpte2086.displayPrimaryGreen.x = pMetadata->displayPrimaryGreen.x; 
+        swapchain->pStaticMetadata->smpte2086.displayPrimaryGreen.x = pMetadata->displayPrimaryGreen.x;
         swapchain->pStaticMetadata->smpte2086.displayPrimaryGreen.y = pMetadata->displayPrimaryGreen.y;
-        swapchain->pStaticMetadata->smpte2086.displayPrimaryBlue.x = pMetadata->displayPrimaryBlue.x; 
+        swapchain->pStaticMetadata->smpte2086.displayPrimaryBlue.x = pMetadata->displayPrimaryBlue.x;
         swapchain->pStaticMetadata->smpte2086.displayPrimaryBlue.y = pMetadata->displayPrimaryBlue.y;
-        swapchain->pStaticMetadata->smpte2086.whitePoint.x = pMetadata->whitePoint.x; 
+        swapchain->pStaticMetadata->smpte2086.whitePoint.x = pMetadata->whitePoint.x;
         swapchain->pStaticMetadata->smpte2086.whitePoint.y = pMetadata->whitePoint.y;
         swapchain->pStaticMetadata->smpte2086.maxLuminance = pMetadata->maxLuminance;
         swapchain->pStaticMetadata->smpte2086.minLuminance = pMetadata->minLuminance;
