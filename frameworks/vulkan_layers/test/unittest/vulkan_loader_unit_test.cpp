@@ -14,19 +14,18 @@
  */
 
 #include <cstddef>
-#include <dlfcn.h>
-#include <gtest/gtest.h>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
 #include <vulkan/vulkan_core.h>
 #include <window.h>
+#include <gtest/gtest.h>
+#include <dlfcn.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
 
 #include "refbase.h"
 #include "surface.h"
 #include "vulkan/vulkan.h"
-
 #include "render_context/render_context.h"
 #include "transaction/rs_transaction.h"
 #include "ui/rs_surface_extractor.h"
@@ -37,7 +36,7 @@ using namespace testing::ext;
 using namespace OHOS::Rosen;
 
 namespace {
-constexpr uint32_t DAMAGE_SIZE = 10;
+    constexpr uint32_t DAMAGE_SIZE = 10;
 }
 namespace vulkan::loader {
 class VulkanLoaderUnitTest : public testing::Test {
@@ -48,10 +47,12 @@ public:
     void TearDown() {}
     uint32_t GetQueueFamilyIndex(VkQueueFlagBits queueFlags);
     OHNativeWindow* CreateNativeWindow(std::string name);
-    VkSwapchainCreateInfoKHR GetSwapchainCreateInfo(VkFormat imageFormat, VkColorSpaceKHR imageColorSpace,
+    VkSwapchainCreateInfoKHR GetSwapchainCreateInfo(
+        VkFormat imageFormat, VkColorSpaceKHR imageColorSpace,
         VkSurfaceTransformFlagBitsKHR transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR);
     static VkBool32 UserCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+        VkDebugUtilsMessageTypeFlagsEXT messageType,
+        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
         void* pUserData);
 
     static inline void DLOpenLibVulkan();
@@ -91,7 +92,7 @@ public:
     static inline PFN_vkGetPhysicalDeviceSurfaceFormats2KHR fpGetPhysicalDeviceSurfaceFormats2KHR;
     static inline PFN_vkSetHdrMetadataEXT fpSetHdrMetadataEXT;
 
-    static inline void* libVulkan_ = nullptr;
+    static inline void *libVulkan_ = nullptr;
     static inline VkInstance instance_ = nullptr;
     static inline VkSurfaceKHR surface_ = VK_NULL_HANDLE;
     static inline VkPhysicalDevice physicalDevice_ = nullptr;
@@ -132,7 +133,7 @@ public:
 
 void VulkanLoaderUnitTest::DLOpenLibVulkan()
 {
-    const char* path = "libvulkan.so";
+    const char *path = "libvulkan.so";
     libVulkan_ = dlopen(path, RTLD_NOW | RTLD_LOCAL);
     if (libVulkan_ == nullptr) {
         std::cout << "dlerror: " << dlerror() << std::endl;
@@ -150,8 +151,11 @@ void VulkanLoaderUnitTest::TrytoCreateVkInstance()
     appInfo.pEngineName = "pEngineName";
     appInfo.apiVersion = VK_API_VERSION_1_0;
 
-    std::vector<const char*> instanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, VK_OHOS_SURFACE_EXTENSION_NAME,
-        VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+    std::vector<const char*> instanceExtensions = {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_OHOS_SURFACE_EXTENSION_NAME,
+        VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+    };
 
     VkInstanceCreateInfo instanceCreateInfo = {};
     instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -173,30 +177,31 @@ void VulkanLoaderUnitTest::TrytoCreateVkInstance()
 VkSwapchainCreateInfoKHR VulkanLoaderUnitTest::GetSwapchainCreateInfo(
     VkFormat imageFormat, VkColorSpaceKHR imageColorSpace, VkSurfaceTransformFlagBitsKHR transform)
 {
-    VkSwapchainCreateInfoKHR swapchainCI = {};
-    swapchainCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    swapchainCI.surface = surface_;
-    uint32_t desiredNumberOfSwapchainImages = surfCaps_.minImageCount + 1;
-    if ((surfCaps_.maxImageCount > 0) && (desiredNumberOfSwapchainImages > surfCaps_.maxImageCount)) {
-        desiredNumberOfSwapchainImages = surfCaps_.maxImageCount;
-    }
-    swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
-    swapchainCI.imageFormat = imageFormat;
-    swapchainCI.imageColorSpace = imageColorSpace;
-    uint32_t width = 1280;
-    uint32_t height = 720;
-    swapchainCI.imageExtent = { width, height };
-    swapchainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    swapchainCI.preTransform = transform;
-    swapchainCI.imageArrayLayers = 1;
-    swapchainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    swapchainCI.queueFamilyIndexCount = 0;
-    swapchainCI.presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-    swapchainCI.oldSwapchain = swapChain_;
-    swapchainCI.clipped = VK_TRUE;
-    swapchainCI.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        VkSwapchainCreateInfoKHR swapchainCI = {};
+        swapchainCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        swapchainCI.surface = surface_;
+        uint32_t desiredNumberOfSwapchainImages = surfCaps_.minImageCount + 1;
+        if ((surfCaps_.maxImageCount > 0) &&
+            (desiredNumberOfSwapchainImages > surfCaps_.maxImageCount)) {
+            desiredNumberOfSwapchainImages = surfCaps_.maxImageCount;
+        }
+        swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
+        swapchainCI.imageFormat = imageFormat;
+        swapchainCI.imageColorSpace = imageColorSpace;
+        uint32_t width = 1280;
+        uint32_t height = 720;
+        swapchainCI.imageExtent = { width, height };
+        swapchainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        swapchainCI.preTransform = transform;
+        swapchainCI.imageArrayLayers = 1;
+        swapchainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        swapchainCI.queueFamilyIndexCount = 0;
+        swapchainCI.presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+        swapchainCI.oldSwapchain = swapChain_;
+        swapchainCI.clipped = VK_TRUE;
+        swapchainCI.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
-    return swapchainCI;
+        return swapchainCI;
 }
 
 OHNativeWindow* VulkanLoaderUnitTest::CreateNativeWindow(std::string name)
@@ -238,8 +243,10 @@ uint32_t VulkanLoaderUnitTest::GetQueueFamilyIndex(VkQueueFlagBits queueFlags)
     return -1;
 }
 
-VkBool32 VulkanLoaderUnitTest::UserCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+VkBool32 VulkanLoaderUnitTest::UserCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
     void* pUserData)
 {
     std::string prefix("");
@@ -252,8 +259,8 @@ VkBool32 VulkanLoaderUnitTest::UserCallback(VkDebugUtilsMessageSeverityFlagBitsE
     } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
         prefix = "DEBUG: ";
     }
-    debugMessage_ << prefix << "[" << pCallbackData->messageIdNumber << "][" << pCallbackData->pMessageIdName
-                  << "] : " << pCallbackData->pMessage;
+    debugMessage_ << prefix << "[" << pCallbackData->messageIdNumber << "]["
+        << pCallbackData->pMessageIdName << "] : " << pCallbackData->pMessage;
     return VK_FALSE;
 }
 
@@ -318,19 +325,22 @@ HWTEST_F(VulkanLoaderUnitTest, LoadBaseFuncPtr1, TestSize.Level1)
 {
     if (isSupportedVulkan_) {
         EXPECT_NE(libVulkan_, nullptr);
-        vkCmdBindDescriptorSets2 =
-            reinterpret_cast<PFN_vkCmdBindDescriptorSets2>(dlsym(libVulkan_, "vkCmdBindDescriptorSets2"));
-        vkCmdBindIndexBuffer2 = reinterpret_cast<PFN_vkCmdBindIndexBuffer2>(dlsym(libVulkan_, "vkCmdBindIndexBuffer2"));
-        vkCmdPushConstants2 = reinterpret_cast<PFN_vkCmdPushConstants2>(dlsym(libVulkan_, "vkCmdPushConstants2"));
-        vkCmdPushDescriptorSet =
-            reinterpret_cast<PFN_vkCmdPushDescriptorSet>(dlsym(libVulkan_, "vkCmdPushDescriptorSet"));
-        vkCmdPushDescriptorSet2 =
-            reinterpret_cast<PFN_vkCmdPushDescriptorSet2>(dlsym(libVulkan_, "vkCmdPushDescriptorSet2"));
+        vkCmdBindDescriptorSets2 = reinterpret_cast<PFN_vkCmdBindDescriptorSets2>(
+            dlsym(libVulkan_, "vkCmdBindDescriptorSets2"));
+        vkCmdBindIndexBuffer2 = reinterpret_cast<PFN_vkCmdBindIndexBuffer2>(
+            dlsym(libVulkan_, "vkCmdBindIndexBuffer2"));
+        vkCmdPushConstants2 = reinterpret_cast<PFN_vkCmdPushConstants2>(
+            dlsym(libVulkan_, "vkCmdPushConstants2"));
+        vkCmdPushDescriptorSet = reinterpret_cast<PFN_vkCmdPushDescriptorSet>(
+            dlsym(libVulkan_, "vkCmdPushDescriptorSet"));
+        vkCmdPushDescriptorSet2 = reinterpret_cast<PFN_vkCmdPushDescriptorSet2>(
+            dlsym(libVulkan_, "vkCmdPushDescriptorSet2"));
         vkCmdPushDescriptorSetWithTemplate = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplate>(
             dlsym(libVulkan_, "vkCmdPushDescriptorSetWithTemplate"));
         vkCmdPushDescriptorSetWithTemplate2 = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplate2>(
             dlsym(libVulkan_, "vkCmdPushDescriptorSetWithTemplate2"));
-        vkCmdSetLineStipple = reinterpret_cast<PFN_vkCmdSetLineStipple>(dlsym(libVulkan_, "vkCmdSetLineStipple"));
+        vkCmdSetLineStipple = reinterpret_cast<PFN_vkCmdSetLineStipple>(
+            dlsym(libVulkan_, "vkCmdSetLineStipple"));
         vkCmdSetRenderingAttachmentLocations = reinterpret_cast<PFN_vkCmdSetRenderingAttachmentLocations>(
             dlsym(libVulkan_, "vkCmdSetRenderingAttachmentLocations"));
         vkCmdSetRenderingInputAttachmentIndices = reinterpret_cast<PFN_vkCmdSetRenderingInputAttachmentIndices>(
@@ -358,21 +368,26 @@ HWTEST_F(VulkanLoaderUnitTest, LoadBaseFuncPtr2, TestSize.Level1)
 {
     if (isSupportedVulkan_) {
         EXPECT_NE(libVulkan_, nullptr);
-        vkCopyImageToImage = reinterpret_cast<PFN_vkCopyImageToImage>(dlsym(libVulkan_, "vkCopyImageToImage"));
-        vkCopyImageToMemory = reinterpret_cast<PFN_vkCopyImageToMemory>(dlsym(libVulkan_, "vkCopyImageToMemory"));
-        vkCopyMemoryToImage = reinterpret_cast<PFN_vkCopyMemoryToImage>(dlsym(libVulkan_, "vkCopyMemoryToImage"));
-        vkCreateHeadlessSurfaceEXT =
-            reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(dlsym(libVulkan_, "vkCreateHeadlessSurfaceEXT"));
+        vkCopyImageToImage = reinterpret_cast<PFN_vkCopyImageToImage>(
+            dlsym(libVulkan_, "vkCopyImageToImage"));
+        vkCopyImageToMemory = reinterpret_cast<PFN_vkCopyImageToMemory>(
+            dlsym(libVulkan_, "vkCopyImageToMemory"));
+        vkCopyMemoryToImage = reinterpret_cast<PFN_vkCopyMemoryToImage>(
+            dlsym(libVulkan_, "vkCopyMemoryToImage"));
+        vkCreateHeadlessSurfaceEXT = reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(
+            dlsym(libVulkan_, "vkCreateHeadlessSurfaceEXT"));
         vkGetDeviceImageSubresourceLayout = reinterpret_cast<PFN_vkGetDeviceImageSubresourceLayout>(
             dlsym(libVulkan_, "vkGetDeviceImageSubresourceLayout"));
-        vkGetImageSubresourceLayout2 =
-            reinterpret_cast<PFN_vkGetImageSubresourceLayout2>(dlsym(libVulkan_, "vkGetImageSubresourceLayout2"));
-        vkGetRenderingAreaGranularity =
-            reinterpret_cast<PFN_vkGetRenderingAreaGranularity>(dlsym(libVulkan_, "vkGetRenderingAreaGranularity"));
-        vkMapMemory2 = reinterpret_cast<PFN_vkMapMemory2>(dlsym(libVulkan_, "vkMapMemory2"));
-        vkTransitionImageLayout =
-            reinterpret_cast<PFN_vkTransitionImageLayout>(dlsym(libVulkan_, "vkTransitionImageLayout"));
-        vkUnmapMemory2 = reinterpret_cast<PFN_vkUnmapMemory2>(dlsym(libVulkan_, "vkUnmapMemory2"));
+        vkGetImageSubresourceLayout2 = reinterpret_cast<PFN_vkGetImageSubresourceLayout2>(
+            dlsym(libVulkan_, "vkGetImageSubresourceLayout2"));
+        vkGetRenderingAreaGranularity = reinterpret_cast<PFN_vkGetRenderingAreaGranularity>(
+            dlsym(libVulkan_, "vkGetRenderingAreaGranularity"));
+        vkMapMemory2 = reinterpret_cast<PFN_vkMapMemory2>(
+            dlsym(libVulkan_, "vkMapMemory2"));
+        vkTransitionImageLayout = reinterpret_cast<PFN_vkTransitionImageLayout>(
+            dlsym(libVulkan_, "vkTransitionImageLayout"));
+        vkUnmapMemory2 = reinterpret_cast<PFN_vkUnmapMemory2>(
+            dlsym(libVulkan_, "vkUnmapMemory2"));
 
         EXPECT_NE(vkCopyImageToImage, nullptr);
         EXPECT_NE(vkCopyImageToMemory, nullptr);
@@ -436,8 +451,8 @@ HWTEST_F(VulkanLoaderUnitTest, vkEnumerateInstanceLayerProperties_Test, TestSize
 HWTEST_F(VulkanLoaderUnitTest, LoadInstanceFuncPtr, TestSize.Level1)
 {
     if (isSupportedVulkan_) {
-        vkDestroyInstance =
-            reinterpret_cast<PFN_vkDestroyInstance>(vkGetInstanceProcAddr(instance_, "vkDestroyInstance"));
+        vkDestroyInstance = reinterpret_cast<PFN_vkDestroyInstance>(
+            vkGetInstanceProcAddr(instance_, "vkDestroyInstance"));
         EXPECT_NE(vkDestroyInstance, nullptr);
         vkEnumeratePhysicalDevices = reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(
             vkGetInstanceProcAddr(instance_, "vkEnumeratePhysicalDevices"));
@@ -446,12 +461,12 @@ HWTEST_F(VulkanLoaderUnitTest, LoadInstanceFuncPtr, TestSize.Level1)
         EXPECT_NE(vkCreateDevice, nullptr);
         vkDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(vkGetInstanceProcAddr(instance_, "vkDestroyDevice"));
         EXPECT_NE(vkDestroyDevice, nullptr);
-        vkDestroySurfaceKHR =
-            reinterpret_cast<PFN_vkDestroySurfaceKHR>(vkGetInstanceProcAddr(instance_, "vkDestroySurfaceKHR"));
+        vkDestroySurfaceKHR = reinterpret_cast<PFN_vkDestroySurfaceKHR>(
+            vkGetInstanceProcAddr(instance_, "vkDestroySurfaceKHR"));
         EXPECT_NE(vkDestroySurfaceKHR, nullptr);
 
-        vkCreateSurfaceOHOS =
-            reinterpret_cast<PFN_vkCreateSurfaceOHOS>(vkGetInstanceProcAddr(instance_, "vkCreateSurfaceOHOS"));
+        vkCreateSurfaceOHOS = reinterpret_cast<PFN_vkCreateSurfaceOHOS>(
+            vkGetInstanceProcAddr(instance_, "vkCreateSurfaceOHOS"));
         EXPECT_NE(vkCreateSurfaceOHOS, nullptr);
 
         fpGetPhysicalDeviceSurfaceCapabilitiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(
@@ -589,9 +604,9 @@ HWTEST_F(VulkanLoaderUnitTest, vkCreateDevice_Test, TestSize.Level1)
         VkDeviceCreateInfo deviceCreateInfo = {};
         deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos {};
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos{};
         const float defaultQueuePriority(0.0f);
-        VkDeviceQueueCreateInfo queueInfo {};
+        VkDeviceQueueCreateInfo queueInfo{};
         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueInfo.queueFamilyIndex = GetQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
         queueInfo.queueCount = 1;
@@ -686,23 +701,24 @@ HWTEST_F(VulkanLoaderUnitTest, LoadDeviceFuncPtr, TestSize.Level1)
     if (isSupportedVulkan_) {
         EXPECT_NE(device_, nullptr);
 
-        fpCreateSwapchainKHR =
-            reinterpret_cast<PFN_vkCreateSwapchainKHR>(vkGetDeviceProcAddr(device_, "vkCreateSwapchainKHR"));
+        fpCreateSwapchainKHR = reinterpret_cast<PFN_vkCreateSwapchainKHR>(
+            vkGetDeviceProcAddr(device_, "vkCreateSwapchainKHR"));
         EXPECT_NE(fpCreateSwapchainKHR, nullptr);
-        fpDestroySwapchainKHR =
-            reinterpret_cast<PFN_vkDestroySwapchainKHR>(vkGetDeviceProcAddr(device_, "vkDestroySwapchainKHR"));
+        fpDestroySwapchainKHR = reinterpret_cast<PFN_vkDestroySwapchainKHR>(
+            vkGetDeviceProcAddr(device_, "vkDestroySwapchainKHR"));
         EXPECT_NE(fpDestroySwapchainKHR, nullptr);
-        fpAcquireNextImage2KHR =
-            reinterpret_cast<PFN_vkAcquireNextImage2KHR>(vkGetDeviceProcAddr(device_, "vkAcquireNextImage2KHR"));
+        fpAcquireNextImage2KHR = reinterpret_cast<PFN_vkAcquireNextImage2KHR>(
+            vkGetDeviceProcAddr(device_, "vkAcquireNextImage2KHR"));
         EXPECT_NE(fpAcquireNextImage2KHR, nullptr);
-        fpQueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(vkGetDeviceProcAddr(device_, "vkQueuePresentKHR"));
+        fpQueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(
+            vkGetDeviceProcAddr(device_, "vkQueuePresentKHR"));
         EXPECT_NE(fpQueuePresentKHR, nullptr);
-        fpGetSwapchainImagesKHR =
-            reinterpret_cast<PFN_vkGetSwapchainImagesKHR>(vkGetDeviceProcAddr(device_, "vkGetSwapchainImagesKHR"));
+        fpGetSwapchainImagesKHR = reinterpret_cast<PFN_vkGetSwapchainImagesKHR>(
+            vkGetDeviceProcAddr(device_, "vkGetSwapchainImagesKHR"));
         EXPECT_NE(fpGetSwapchainImagesKHR, nullptr);
 
-        fpSetHdrMetadataEXT =
-            reinterpret_cast<PFN_vkSetHdrMetadataEXT>(vkGetDeviceProcAddr(device_, "vkSetHdrMetadataEXT"));
+        fpSetHdrMetadataEXT = reinterpret_cast<PFN_vkSetHdrMetadataEXT>(
+            vkGetDeviceProcAddr(device_, "vkSetHdrMetadataEXT"));
         EXPECT_NE(fpSetHdrMetadataEXT, nullptr);
     }
 }
@@ -810,8 +826,8 @@ HWTEST_F(VulkanLoaderUnitTest, fpGetPhysicalDeviceSurfaceFormatsKHR_FAIL_Test, T
 
         uint32_t formatCount = 1;
         std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
-        VkResult err =
-            fpGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice_, surface_, &formatCount, surfaceFormats.data());
+        VkResult err = fpGetPhysicalDeviceSurfaceFormatsKHR(
+            physicalDevice_, surface_, &formatCount, surfaceFormats.data());
         EXPECT_NE(err, VK_SUCCESS);
     }
 }
@@ -833,13 +849,24 @@ HWTEST_F(VulkanLoaderUnitTest, fpCreateSwapchainKHR_Success_Test, TestSize.Level
             VK_FORMAT_R8G8B8A8_UNORM,
             VK_FORMAT_R8G8B8A8_SRGB,
         };
-        std::vector<VkColorSpaceKHR> colorDataspaceArray = { VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
-            VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT, VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT,
-            VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT, VK_COLOR_SPACE_DCI_P3_LINEAR_EXT,
-            VK_COLOR_SPACE_DCI_P3_NONLINEAR_EXT, VK_COLOR_SPACE_BT709_LINEAR_EXT, VK_COLOR_SPACE_BT709_NONLINEAR_EXT,
-            VK_COLOR_SPACE_BT2020_LINEAR_EXT, VK_COLOR_SPACE_HDR10_ST2084_EXT, VK_COLOR_SPACE_DOLBYVISION_EXT,
-            VK_COLOR_SPACE_HDR10_HLG_EXT, VK_COLOR_SPACE_ADOBERGB_LINEAR_EXT, VK_COLOR_SPACE_ADOBERGB_NONLINEAR_EXT,
-            VK_COLORSPACE_SRGB_NONLINEAR_KHR, VK_COLOR_SPACE_DCI_P3_LINEAR_EXT };
+        std::vector<VkColorSpaceKHR> colorDataspaceArray = {
+            VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+            VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT,
+            VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT,
+            VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT,
+            VK_COLOR_SPACE_DCI_P3_LINEAR_EXT,
+            VK_COLOR_SPACE_DCI_P3_NONLINEAR_EXT,
+            VK_COLOR_SPACE_BT709_LINEAR_EXT,
+            VK_COLOR_SPACE_BT709_NONLINEAR_EXT,
+            VK_COLOR_SPACE_BT2020_LINEAR_EXT,
+            VK_COLOR_SPACE_HDR10_ST2084_EXT,
+            VK_COLOR_SPACE_DOLBYVISION_EXT,
+            VK_COLOR_SPACE_HDR10_HLG_EXT,
+            VK_COLOR_SPACE_ADOBERGB_LINEAR_EXT,
+            VK_COLOR_SPACE_ADOBERGB_NONLINEAR_EXT,
+            VK_COLORSPACE_SRGB_NONLINEAR_KHR,
+            VK_COLOR_SPACE_DCI_P3_LINEAR_EXT
+        };
         std::vector<VkSurfaceTransformFlagBitsKHR> transformArray = {
             VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
             VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR,
@@ -854,8 +881,8 @@ HWTEST_F(VulkanLoaderUnitTest, fpCreateSwapchainKHR_Success_Test, TestSize.Level
         for (decltype(pixelFormatArray.size()) i = 0; i < pixelFormatArray.size(); i++) {
             for (decltype(colorDataspaceArray.size()) j = 0; j < colorDataspaceArray.size(); j++) {
                 for (decltype(transformArray.size()) k = 0; k < transformArray.size(); k++) {
-                    VkSwapchainCreateInfoKHR swapchainCI =
-                        GetSwapchainCreateInfo(pixelFormatArray[i], colorDataspaceArray[j], transformArray[k]);
+                    VkSwapchainCreateInfoKHR swapchainCI = GetSwapchainCreateInfo(
+                        pixelFormatArray[i], colorDataspaceArray[j], transformArray[k]);
 
                     VkSwapchainKHR swapChainSuccess = VK_NULL_HANDLE;
                     VkSwapchainKHR swapChainSuccess2 = VK_NULL_HANDLE;
@@ -889,12 +916,15 @@ HWTEST_F(VulkanLoaderUnitTest, fpCreateSwapchainKHR_Fail_Test, TestSize.Level1)
         EXPECT_NE(device_, nullptr);
         EXPECT_NE(surface_, VK_NULL_HANDLE);
 
-        std::vector<VkColorSpaceKHR> colorDataspaceArray = { VK_COLOR_SPACE_PASS_THROUGH_EXT,
-            VK_COLOR_SPACE_DISPLAY_NATIVE_AMD, VK_COLOR_SPACE_MAX_ENUM_KHR };
+        std::vector<VkColorSpaceKHR> colorDataspaceArray = {
+            VK_COLOR_SPACE_PASS_THROUGH_EXT,
+            VK_COLOR_SPACE_DISPLAY_NATIVE_AMD,
+            VK_COLOR_SPACE_MAX_ENUM_KHR
+        };
 
         for (decltype(colorDataspaceArray.size()) i = 0; i < colorDataspaceArray.size(); i++) {
-            VkSwapchainCreateInfoKHR swapchainCI =
-                GetSwapchainCreateInfo(VK_FORMAT_R8G8B8A8_UNORM, colorDataspaceArray[i]);
+            VkSwapchainCreateInfoKHR swapchainCI = GetSwapchainCreateInfo(
+                VK_FORMAT_R8G8B8A8_UNORM, colorDataspaceArray[i]);
 
             VkSwapchainKHR swapChainFail = VK_NULL_HANDLE;
             VkSwapchainKHR swapChainFail2 = VK_NULL_HANDLE;
@@ -927,12 +957,12 @@ HWTEST_F(VulkanLoaderUnitTest, vkCreateDebugUtilsMessengerEXT_Test, TestSize.Lev
         EXPECT_NE(instance_, nullptr);
         EXPECT_NE(device_, nullptr);
 
-        VkDebugUtilsMessengerCreateInfoEXT createInfo {};
+        VkDebugUtilsMessengerCreateInfoEXT createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        createInfo.messageSeverity =
-            VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-        createInfo.messageType =
-            VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+        createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                                     VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                                 VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
         createInfo.pfnUserCallback = UserCallback;
         VkResult result = vkCreateDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugUtilsMessenger);
         EXPECT_EQ(result, VK_SUCCESS);
@@ -990,8 +1020,8 @@ HWTEST_F(VulkanLoaderUnitTest, fpCreateSwapchainKHR_Test, TestSize.Level1)
         EXPECT_NE(device_, nullptr);
         EXPECT_NE(surface_, VK_NULL_HANDLE);
 
-        VkSwapchainCreateInfoKHR swapchainCI =
-            GetSwapchainCreateInfo(VK_FORMAT_B8G8R8A8_UNORM, surfaceFormat_.colorSpace);
+        VkSwapchainCreateInfoKHR swapchainCI = GetSwapchainCreateInfo(
+            VK_FORMAT_B8G8R8A8_UNORM, surfaceFormat_.colorSpace);
 
         VkResult err = fpCreateSwapchainKHR(device_, &swapchainCI, nullptr, &swapChain_);
         EXPECT_EQ(err, VK_SUCCESS);
@@ -1050,8 +1080,8 @@ HWTEST_F(VulkanLoaderUnitTest, vkCreateSemaphore_Test, TestSize.Level1)
     if (isSupportedVulkan_) {
         VkSemaphoreCreateInfo semaphoreCreateInfo {};
         semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-        PFN_vkCreateSemaphore vkCreateSemaphore =
-            reinterpret_cast<PFN_vkCreateSemaphore>(vkGetInstanceProcAddr(instance_, "vkCreateSemaphore"));
+        PFN_vkCreateSemaphore vkCreateSemaphore = reinterpret_cast<PFN_vkCreateSemaphore>(
+            vkGetInstanceProcAddr(instance_, "vkCreateSemaphore"));
         EXPECT_NE(vkCreateSemaphore, nullptr);
         VkResult err = vkCreateSemaphore(device_, &semaphoreCreateInfo, nullptr, &semaphore_);
         EXPECT_EQ(err, VK_SUCCESS);
@@ -1071,7 +1101,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpAcquireNextImage2KHR_Test, TestSize.Level1)
         pAcquireInfo.swapchain = swapChain2_;
         pAcquireInfo.timeout = UINT64_MAX;
         pAcquireInfo.semaphore = semaphore_;
-        pAcquireInfo.fence = (VkFence) nullptr;
+        pAcquireInfo.fence = (VkFence)nullptr;
         uint32_t imageIndex = 0;
         VkResult err = fpAcquireNextImage2KHR(device_, &pAcquireInfo, &imageIndex);
         EXPECT_EQ(err, VK_SUCCESS);
@@ -1088,8 +1118,8 @@ HWTEST_F(VulkanLoaderUnitTest, fpQueuePresentKHR_Test, TestSize.Level1)
 {
     if (isSupportedVulkan_) {
         VkRectLayerKHR rect = {
-            .offset = { 0, 0 },
-            .extent = { DAMAGE_SIZE, DAMAGE_SIZE },
+            .offset = {0, 0},
+            .extent = {DAMAGE_SIZE, DAMAGE_SIZE},
             .layer = 0,
         };
         VkPresentRegionKHR presentRegion = {
@@ -1103,8 +1133,8 @@ HWTEST_F(VulkanLoaderUnitTest, fpQueuePresentKHR_Test, TestSize.Level1)
             .pRegions = &presentRegion,
         };
         VkQueue queue = nullptr;
-        PFN_vkGetDeviceQueue vkGetDeviceQueue =
-            reinterpret_cast<PFN_vkGetDeviceQueue>(vkGetInstanceProcAddr(instance_, "vkGetDeviceQueue"));
+        PFN_vkGetDeviceQueue vkGetDeviceQueue = reinterpret_cast<PFN_vkGetDeviceQueue>(
+            vkGetInstanceProcAddr(instance_, "vkGetDeviceQueue"));
         EXPECT_NE(vkGetDeviceQueue, nullptr);
         vkGetDeviceQueue(device_, 0, 0, &queue);
         EXPECT_NE(queue, nullptr);
@@ -1177,6 +1207,7 @@ HWTEST_F(VulkanLoaderUnitTest, translateNativeToVulkanTransform_Test, TestSize.L
             EXPECT_EQ(err, VK_SUCCESS);
             EXPECT_NE(surface, VK_NULL_HANDLE);
 
+
             EXPECT_NE(fpGetPhysicalDeviceSurfaceCapabilitiesKHR, nullptr);
             EXPECT_NE(physicalDevice_, nullptr);
             EXPECT_NE(surface, VK_NULL_HANDLE);
@@ -1204,8 +1235,8 @@ HWTEST_F(VulkanLoaderUnitTest, enumerateDeviceExtensionProperties_GetExtensionPr
         EXPECT_EQ(err, VK_SUCCESS);
         if (pPropertyCount > 0) {
             std::vector<VkExtensionProperties> pProperties(pPropertyCount);
-            err =
-                vkEnumerateDeviceExtensionProperties(physicalDevice_, pLayerName, &pPropertyCount, pProperties.data());
+            err = vkEnumerateDeviceExtensionProperties(
+                physicalDevice_, pLayerName, &pPropertyCount, pProperties.data());
             EXPECT_EQ(err, VK_SUCCESS);
         }
     }
@@ -1230,8 +1261,8 @@ HWTEST_F(VulkanLoaderUnitTest, enumerateDeviceExtensionProperties_VK_KHR_increme
         EXPECT_EQ(err, VK_SUCCESS);
         std::vector<VkExtensionProperties> pProperties(pPropertyCount);
         if (pPropertyCount > 0) {
-            err =
-                vkEnumerateDeviceExtensionProperties(physicalDevice_, pLayerName, &pPropertyCount, pProperties.data());
+            err = vkEnumerateDeviceExtensionProperties(
+                physicalDevice_, pLayerName, &pPropertyCount, pProperties.data());
             EXPECT_EQ(err, VK_SUCCESS);
         }
         // Check that all required extensions are present
@@ -1300,6 +1331,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_Static_Metadata_Test, TestSiz
 
         VkSwapchainKHR swapchains[] = { swapChain_ };
         fpSetHdrMetadataEXT(device_, 1, swapchains, &hdrMetadata);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1339,6 +1371,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_Static_Vivid_Metadata_Test, T
 
         VkSwapchainKHR swapchains[] = { swapChain_ };
         fpSetHdrMetadataEXT(device_, 1, swapchains, &hdrMetadata);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1357,6 +1390,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_Nullptr_Metadata_Test, TestSi
 
         VkSwapchainKHR swapchains[] = { swapChain_ };
         fpSetHdrMetadataEXT(device_, 1, swapchains, nullptr);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1388,6 +1422,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_Multiple_Swapchains_Test, Tes
 
         VkSwapchainKHR swapchains[] = { swapChain_, swapChain2_ };
         fpSetHdrMetadataEXT(device_, 2, swapchains, &hdrMetadata);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1429,6 +1464,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_Different_Vivid_Sizes_Test, T
             VkSwapchainKHR swapchains[] = { swapChain_ };
             fpSetHdrMetadataEXT(device_, 1, swapchains, &hdrMetadata);
         }
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1459,6 +1495,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_NonVivid_PNext_Chain_Test, Te
 
         VkSwapchainKHR swapchains[] = { swapChain_ };
         fpSetHdrMetadataEXT(device_, 1, swapchains, &hdrMetadata);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1511,6 +1548,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_Vivid_Resize_Test, TestSize.L
 
         hdrMetadata.pNext = &vividMetadataLarge;
         fpSetHdrMetadataEXT(device_, 1, swapchains, &hdrMetadata);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1556,6 +1594,7 @@ HWTEST_F(VulkanLoaderUnitTest, fpSetHdrMetadataEXT_Same_Vivid_Size_Test, TestSiz
 
         vividMetadata.pDynamicMetadata = vividMetadataData2;
         fpSetHdrMetadataEXT(device_, 1, swapchains, &hdrMetadata);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
     }
 }
 
@@ -1732,6 +1771,47 @@ HWTEST_F(VulkanLoaderUnitTest, SetMetaData_NonVivid_PNext_Chain_Coverage_Test, T
 
         VkSwapchainKHR swapchains[] = { swapChain2_ };
         fpSetHdrMetadataEXT(device_, 1, swapchains, &hdrMetadata);
+        EXPECT_NE(swapChain_, VK_NULL_HANDLE);
+    }
+}
+
+/**
+ * @tc.name: test vkCreateDevice with HUAWEI_HDR_VIVID extension
+ * @tc.desc: test vkCreateDevice with HUAWEI_HDR_VIVID extension
+ * @tc.type: FUNC
+ * @tc.require: issueI6SKRO
+ */
+HWTEST_F(VulkanLoaderUnitTest, vkCreateDevice_HuaweiHdrVivid_Test, TestSize.Level1)
+{
+    if (isSupportedVulkan_) {
+        EXPECT_NE(vkCreateDevice, nullptr);
+        EXPECT_NE(physicalDevice_, nullptr);
+
+        VkDeviceCreateInfo deviceCreateInfo = {};
+        deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos {};
+        const float defaultQueuePriority(0.0f);
+        VkDeviceQueueCreateInfo queueInfo {};
+        queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueInfo.queueFamilyIndex = GetQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+        queueInfo.queueCount = 1;
+        queueInfo.pQueuePriorities = &defaultQueuePriority;
+        queueCreateInfos.push_back(queueInfo);
+        deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+        deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+
+        std::vector<const char*> deviceExtensions;
+        deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+        deviceExtensions.push_back(VK_EXT_HDR_METADATA_EXTENSION_NAME);
+        deviceExtensions.push_back(VK_HUAWEI_HDR_VIVID_EXTENSION_NAME);
+        deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
+        deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+        VkDevice logicalDevice;
+        VkResult err = vkCreateDevice(physicalDevice_, &deviceCreateInfo, nullptr, &logicalDevice);
+        EXPECT_EQ(err, VK_SUCCESS);
+        EXPECT_NE(logicalDevice, nullptr);
+        vkDestroyDevice(logicalDevice, nullptr);
     }
 }
 } // namespace vulkan::loader
