@@ -590,9 +590,47 @@ HWTEST_F(RSCanvasDrawingRenderNodeTest, ContentStyleSlotUpdateTest006, TestSize.
     node->SetWaitSync(false);
     node->isOnTheTree_ = false;
     node->isNeverOnTree_ = false;
-    node->stagingRenderParams_ = nullptr;
+    node->stagingRenderParams_ = = nullptr;
     node->isTextureExportNode_ = true;
     RSUniRenderJudgement::uniRenderEnabledType_ = UniRenderEnabledType::UNI_RENDER_DISABLED;
+    node->ContentStyleSlotUpdate();
+    EXPECT_TRUE(node->dirtyTypesNG_.test(static_cast<size_t>(ModifierNG::RSModifierType::CONTENT_STYLE)));
+}
+
+/**
+ * @tc.name: ContentStyleSlotUpdateTest007
+ * @tc.desc: Test ContentStyleSlotUpdate with RSCanvasDrawingRenderParams
+ * @tc.type: FUNC
+ */
+HWTEST_F(RSCanvasDrawingRenderNodeTest, ContentStyleSlotUpdateTest007, TestSize.Level1)
+{
+    auto node = std::make_shared<RSCanvasDrawingRenderNode>(12);
+    node->dirtyTypesNG_.set(static_cast<int>(ModifierNG::RSModifierType::CONTENT_STYLE), true);
+    node->SetWaitSync(false);
+    node->isOnTheTree_ = false;
+    node->isNeverOnTree_ = false;
+    node->stagingRenderParams_ = std::make_unique<RSCanvasDrawingRenderParams>(node->GetId());
+    node->isTextureExportNode_ = false;
+    RSUniRenderJudgement::uniRenderEnabledType_ = UniRenderEnabledType::UNI_RENDER_DISABLED;
+    node->ContentStyleSlotUpdate();
+    EXPECT_TRUE(node->dirtyTypesNG_.test(static_cast<size_t>(ModifierNG::RSModifierType::CONTENT_STYLE)));
+}
+
+/**
+ * @tc.name: ContentStyleSlotUpdateTest008
+ * @tc.desc: Test ContentStyleSlotUpdate with UNI_RENDER_ENABLED_FOR_ALL
+ * @tc.type: FUNC
+ */
+HWTEST_F(RSCanvasDrawingRenderNodeTest, ContentStyleSlotUpdateTest008, TestSize.Level1)
+{
+    auto node = std::make_shared<RSCanvasDrawingRenderNode>(12);
+    node->dirtyTypesNG_.set(static_cast<int>(ModifierNG::RSModifierType::CONTENT_STYLE), true);
+    node->SetWaitSync(false);
+    node->isOnTheTree_ = false;
+    node->isNeverOnTree_ = false;
+    node->stagingRenderParams_ = nullptr;
+    node->isTextureExportNode_ = false;
+    RSUniRenderJudgement::uniRenderEnabledType_ = UniRenderEnabledType::UNI_RENDER_ENABLED_FOR_ALL;
     node->ContentStyleSlotUpdate();
     EXPECT_TRUE(node->dirtyTypesNG_.test(static_cast<size_t>(ModifierNG::RSModifierType::CONTENT_STYLE)));
 }
