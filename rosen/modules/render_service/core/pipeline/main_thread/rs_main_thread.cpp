@@ -3574,13 +3574,13 @@ void RSMainThread::Animate(uint64_t timestamp)
     uint32_t totalAnimationSize = 0;
     uint32_t animatingNodeSize = context_->animatingNodeList_.size();
     bool needPrintAnimationDFX = IsTagEnabled(HITRACE_TAG_GRAPHIC_AGP) ? true : false;
-    int64_t minNextFrameTime = INT64_MAX;
+    int64_t nextFrameTime = INT64_MAX;
     std::set<pid_t> animationPids;
     // iterate and animate all animating nodes, remove if animation finished
     EraseIf(context_->animatingNodeList_,
         [this, timestamp, period, isDisplaySyncEnabled, isRateDeciderEnabled, &totalAnimationSize,
         &curWinAnim, &needRequestNextVsync, &isCalculateAnimationValue, &needPrintAnimationDFX, &minLeftDelayTime,
-        &animationPids, &minNextFrameTime](const auto& iter) -> bool {
+        &animationPids, &nextFrameTime](const auto& iter) -> bool {
         auto node = iter.second.lock();
         if (node == nullptr) {
             RS_LOGD("Animate removing expired animating node");
@@ -3591,6 +3591,8 @@ void RSMainThread::Animate(uint64_t timestamp)
             isRateDeciderEnabled, hgmRenderContext_->GetConvertFrameRateFunc());
         auto [hasRunningAnimation, nodeNeedRequestNextVsync, nodeCalculateAnimationValue] =
             node->Animate(timestamp, minLeftDelayTime, period, isDisplaySyncEnabled);
+        nextFrameTime = node->displaySync_ ?
+            std::min(nextFrameTime, node->displaySync_->GetNextFrameTime()) : 0;
         if (!hasRunningAnimation) {
             node->InActivateDisplaySync();
             RS_LOGD("Animate removing finished animating node %{public}" PRIu64, node->GetId());
@@ -3648,7 +3650,7 @@ void RSMainThread::Animate(uint64_t timestamp)
             PostTask(RequestNextVSyncTask, "animate_request_next_vsync", minLeftDelayTime - oneFrameTimeInFPS60,
                 AppExecFwk::EventQueue::Priority::IMMEDIATE);
         } else {
-            int64_t requestNextFrameTime = (minNextFrameTime == INT64_MAX) ? 0 : minNextFrameTime;
+            int64_t requestNextFrameTime = (nextFrameTime == INT64_MAX) ? 0 : nextFrameTime;
             requestNextFrameTime -= REQUEST_NEXT_FRAME_ADVANCE_NS;
             RequestNextVSync("animate", timestamp_, requestNextFrameTime);
         }
