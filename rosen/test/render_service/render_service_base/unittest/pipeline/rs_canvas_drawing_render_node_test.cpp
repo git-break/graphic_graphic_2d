@@ -711,6 +711,45 @@ HWTEST_F(RSCanvasDrawingRenderNodeTest, ContentStyleSlotUpdateTest009, TestSize.
 }
 
 /**
+ * @tc.name: ContentStyleSlotUpdateTest010
+ * @tc.desc: Test ContentStyleSlotUpdate with CONTENT_STYLE not dirty
+ * @tc.type: FUNC
+ */
+HWTEST_F(RSCanvasDrawingRenderNodeTest, ContentStyleSlotUpdateTest010, TestSize.Level1)
+{
+    auto node = std::make_shared<RSCanvasDrawingRenderNode>(12);
+    node->SetWaitSync(false);
+    node->isOnTheTree_ = false;
+    node->isNeverOnTree_ = false;
+    node->stagingRenderParams_ = std::make_unique<RSCanvasDrawingRenderParams>(node->GetId());
+    auto stagingRenderParams = static_cast<RSCanvasDrawingRenderParams*>(node->stagingRenderParams_.get());
+    stagingRenderParams->surfaceParams_ = { 100, 100, GraphicColorGamut::GRAPHIC_COLOR_GAMUT_SRGB };
+    node->isTextureExportNode_ = false;
+    RSUniRenderJudgement::uniRenderEnabledType_ = UniRenderEnabledType::UNI_RENDER_ENABLED_FOR_ALL;
+    node->ContentStyleSlotUpdate();
+    EXPECT_FALSE(node->dirtyTypesNG_.test(static_cast<size_t>(ModifierNG::RSModifierType::CONTENT_STYLE)));
+}
+
+/**
+ * @tc.name: OnSyncWaitSyncTrueTest
+ * @tc.desc: Test OnSync with waitSync true covers SetNeedDraw
+ * @tc.type: FUNC
+ */
+HWTEST_F(RSCanvasDrawingRenderNodeTest, OnSyncWaitSyncTrueTest, TestSize.Level1)
+{
+    auto node = std::make_shared<RSCanvasDrawingRenderNode>(14);
+    std::shared_ptr<const RSRenderNode> otherNode = std::make_shared<const RSRenderNode>(14 + 1);
+    node->renderDrawable_ =
+        std::make_shared<RSCanvasDrawingRenderNodeDrawableAdapterTest>(otherNode);
+    node->renderDrawable_->renderParams_ = std::make_unique<RSRenderParams>(14);
+    node->stagingRenderParams_ = std::make_unique<RSRenderParams>(14);
+    node->uifirstSkipPartialSync_ = true;
+    node->SetWaitSync(true);
+    node->OnSync();
+    EXPECT_FALSE(node->IsWaitSync());
+}
+
+/**
  * @tc.name: SplitDrawCmdListTest
  * @tc.desc: Test SplitDrawCmdList
  * @tc.type: FUNC
