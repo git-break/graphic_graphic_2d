@@ -28,6 +28,7 @@ BlurBubblesRisePara::BlurBubblesRisePara(const BlurBubblesRisePara& other)
     this->invertMask_ = other.invertMask_;
     this->maskChannel_ = other.maskChannel_;
     this->maskScrollSpeed_ = other.maskScrollSpeed_;
+    this->maskImage_ = other.maskImage_;
 }
 
 bool BlurBubblesRisePara::Marshalling(Parcel& parcel) const

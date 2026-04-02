@@ -17,6 +17,10 @@
 #include "js_native_api_types.h"
 #include "ui_effect_napi_utils.h"
 
+#ifdef IMAGE_NAPI_ENABLE
+#include "pixel_map_napi.h"
+#endif
+
 namespace OHOS {
 namespace Rosen {
 
@@ -43,6 +47,53 @@ std::map<int32_t, GradientDirection> INDEX_TO_DIRECTION = {
 
 static const std::string CLASS_NAME = "Filter";
 static const std::string HDR_BRIGHTNESS_PERMISSION = "ohos.permission.HDR_BRIGHTNESS";
+
+namespace {
+bool ParsePixelMap(napi_env env, napi_value argv, std::shared_ptr<Media::PixelMap>& pixelMap)
+{
+#ifdef IMAGE_NAPI_ENABLE
+    napi_value constructor = nullptr;
+    napi_value global = nullptr;
+    bool isInstance = false;
+    napi_status ret = napi_invalid_arg;
+
+    napi_get_global(env, &global);
+
+    ret = napi_get_named_property(env, global, "PixelMap", &constructor);
+    if (ret != napi_ok) {
+        FILTER_LOG_E("Get PixelMapNapi property failed");
+        return false;
+    }
+
+    napi_valuetype res = napi_undefined;
+    napi_typeof(env, argv, &res);
+    Media::PixelMapNapi* tempPixelMap = nullptr;
+    if (res == napi_object) {
+        if (napi_unwrap(env, argv, reinterpret_cast<void**>(&tempPixelMap)) != napi_ok) {
+            FILTER_LOG_E("Get PixelMapNapi napi_unwrap failed");
+            return false;
+        }
+        if (tempPixelMap == nullptr) {
+            FILTER_LOG_E("Get PixelMapNapi tempPixelMap is nullptr");
+            return false;
+        }
+        pixelMap = tempPixelMap->GetPixelNapiInner();
+        return pixelMap != nullptr;
+    }
+
+    ret = napi_instanceof(env, argv, constructor, &isInstance);
+    if (ret == napi_ok && isInstance) {
+        pixelMap = Media::PixelMapNapi::GetPixelMap(env, argv);
+        return pixelMap != nullptr;
+    }
+
+    FILTER_LOG_E("Invalid PixelMap argument type, ret: %{public}d, isInstance: %{public}d", ret, isInstance);
+#else
+    FILTER_LOG_E("ImageNapi disabled, parse pixel map failed");
+#endif
+    return false;
+}
+} // namespace
 
 FilterNapi::FilterNapi()
 {
@@ -498,12 +549,12 @@ napi_value FilterNapi::SetBlurBubblesRise(napi_env env, napi_callback_info info)
         return nullptr;
     }
 
-    static const size_t maxArgc = NUM_5;
+    static const size_t maxArgc = NUM_6;
     static const size_t minArgc = NUM_1;
     size_t argCount = maxArgc;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[NUM_5] = {0};
+    napi_value argValue[NUM_6] = {0};
     UIEFFECT_JS_ARGS(env, info, status, argCount, argValue, thisVar);
     UIEFFECT_NAPI_CHECK_RET_D(status == napi_ok && argCount >= minArgc && argCount <= maxArgc, nullptr,
         FILTER_LOG_E("FilterNapi SetBlurBubblesRise parsing input fail"));
@@ -517,6 +568,7 @@ napi_value FilterNapi::SetBlurBubblesRise(napi_env env, napi_callback_info info)
     uint32_t invertMask = 0;
     uint32_t maskChannel = 0;
     float maskScrollSpeed = 0.07f;
+    std::shared_ptr<Media::PixelMap> maskImage = nullptr;
     if (argCount >= NUM_1) {
         blurRadius = GetSpecialValue(env, argValue[NUM_0]);
     }
@@ -532,11 +584,16 @@ napi_value FilterNapi::SetBlurBubblesRise(napi_env env, napi_callback_info info)
     if (argCount >= NUM_5) {
         maskScrollSpeed = GetSpecialValue(env, argValue[NUM_4]);
     }
+    if (argCount >= NUM_6) {
+        UIEFFECT_NAPI_CHECK_RET_D(ParsePixelMap(env, argValue[NUM_5], maskImage), nullptr,
+            FILTER_LOG_E("FilterNapi SetBlurBubblesRise parse mask image failed"));
+    }
     para->SetBlurRadius(blurRadius);
     para->SetMixStrength(mixStrength);
     para->SetInvertMask(invertMask);
     para->SetMaskChannel(maskChannel);
     para->SetMaskScrollSpeed(maskScrollSpeed);
+    para->SetMaskImage(maskImage);
 
     Filter* filterObj = nullptr;
     status = napi_unwrap(env, thisVar, reinterpret_cast<void**>(&filterObj));

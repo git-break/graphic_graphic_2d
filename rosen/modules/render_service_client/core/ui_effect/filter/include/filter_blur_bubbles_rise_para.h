@@ -18,6 +18,7 @@
 #include <cstdint>
 
 #include "filter_para.h"
+#include "pixel_map.h"
 
 namespace OHOS {
 namespace Rosen {
@@ -81,6 +82,16 @@ public:
         return maskScrollSpeed_;
     }
 
+    void SetMaskImage(std::shared_ptr<Media::PixelMap> maskImage)
+    {
+        maskImage_ = maskImage;
+    }
+
+    const std::shared_ptr<Media::PixelMap>& GetMaskImage() const
+    {
+        return maskImage_;
+    }
+
     bool Marshalling(Parcel& parcel) const override;
 
     static void RegisterUnmarshallingCallback();
@@ -95,6 +106,7 @@ private:
     uint32_t invertMask_ = 0;
     uint32_t maskChannel_ = 0;
     float maskScrollSpeed_ = 0.07f;
+    std::shared_ptr<Media::PixelMap> maskImage_;
 };
 } // namespace Rosen
 } // namespace OHOS
