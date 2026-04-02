@@ -3591,7 +3591,7 @@ void RSMainThread::Animate(uint64_t timestamp)
             isRateDeciderEnabled, hgmRenderContext_->GetConvertFrameRateFunc());
         auto [hasRunningAnimation, nodeNeedRequestNextVsync, nodeCalculateAnimationValue] =
             node->Animate(timestamp, minLeftDelayTime, period, isDisplaySyncEnabled);
-        nextFrameTime = node->displaySync_ ?
+        nextFrameTime = (node->displaySync_ && node.use_count() != 1) ?
             std::min(nextFrameTime, node->displaySync_->GetNextFrameTime()) : 0;
         if (!hasRunningAnimation) {
             node->InActivateDisplaySync();
