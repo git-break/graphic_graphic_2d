@@ -492,39 +492,54 @@ napi_value FilterNapi::SetHeatDistortion(napi_env env, napi_callback_info info)
         return nullptr;
     }
 
-    static const size_t maxArgc = NUM_4;
-    static const size_t minArgc = NUM_1;
-    size_t argCount = maxArgc;
+    static const size_t expectArgc = NUM_1;
+    size_t argCount = expectArgc;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[NUM_4] = {0};
+    napi_value argValue[NUM_1] = {0};
     UIEFFECT_JS_ARGS(env, info, status, argCount, argValue, thisVar);
-    UIEFFECT_NAPI_CHECK_RET_D(status == napi_ok && argCount >= minArgc && argCount <= maxArgc, nullptr,
+    UIEFFECT_NAPI_CHECK_RET_D(status == napi_ok && argCount == expectArgc &&
+        UIEffectNapiUtils::GetType(env, argValue[NUM_0]) == napi_object, nullptr,
         FILTER_LOG_E("FilterNapi SetHeatDistortion parsing input fail"));
 
     auto para = std::make_shared<HeatDistortionPara>();
     UIEFFECT_NAPI_CHECK_RET_D(para != nullptr, nullptr,
         FILTER_LOG_E("FilterNapi SetHeatDistortion para is nullptr"));
 
+    // Parse intensity property
+    napi_value intensityValue;
     float intensity = 1.0f;
-    float noiseScale = 1.0f;
-    float riseWeight = 0.2f;
-    float progress = 0.0f;
-    if (argCount >= NUM_1) {
-        intensity = GetSpecialValue(env, argValue[NUM_0]);
-    }
-    if (argCount >= NUM_2) {
-        noiseScale = GetSpecialValue(env, argValue[NUM_1]);
-    }
-    if (argCount >= NUM_3) {
-        riseWeight = GetSpecialValue(env, argValue[NUM_2]);
-    }
-    if (argCount >= NUM_4) {
-        progress = GetSpecialValue(env, argValue[NUM_3]);
+    if (napi_get_named_property(env, argValue[NUM_0], "intensity", &intensityValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, intensityValue) == napi_number) {
+        intensity = GetSpecialValue(env, intensityValue);
     }
     para->SetIntensity(intensity);
+
+    // Parse noiseScale property
+    napi_value noiseScaleValue;
+    float noiseScale = 1.0f;
+    if (napi_get_named_property(env, argValue[NUM_0], "noiseScale", &noiseScaleValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, noiseScaleValue) == napi_number) {
+        noiseScale = GetSpecialValue(env, noiseScaleValue);
+    }
     para->SetNoiseScale(noiseScale);
+
+    // Parse riseWeight property
+    napi_value riseWeightValue;
+    float riseWeight = 0.2f;
+    if (napi_get_named_property(env, argValue[NUM_0], "riseWeight", &riseWeightValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, riseWeightValue) == napi_number) {
+        riseWeight = GetSpecialValue(env, riseWeightValue);
+    }
     para->SetRiseWeight(riseWeight);
+
+    // Parse progress property
+    napi_value progressValue;
+    float progress = 0.0f;
+    if (napi_get_named_property(env, argValue[NUM_0], "progress", &progressValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, progressValue) == napi_number) {
+        progress = GetSpecialValue(env, progressValue);
+    }
     para->SetProgress(progress);
 
     Filter* filterObj = nullptr;
@@ -544,51 +559,79 @@ napi_value FilterNapi::SetBlurBubblesRise(napi_env env, napi_callback_info info)
         return nullptr;
     }
 
-    static const size_t maxArgc = NUM_6;
-    static const size_t minArgc = NUM_1;
-    size_t argCount = maxArgc;
+    static const size_t expectArgc = NUM_1;
+    size_t argCount = expectArgc;
     napi_status status;
     napi_value thisVar = nullptr;
-    napi_value argValue[NUM_6] = {0};
+    napi_value argValue[NUM_1] = {0};
     UIEFFECT_JS_ARGS(env, info, status, argCount, argValue, thisVar);
-    UIEFFECT_NAPI_CHECK_RET_D(status == napi_ok && argCount >= minArgc && argCount <= maxArgc, nullptr,
+    UIEFFECT_NAPI_CHECK_RET_D(status == napi_ok && argCount == expectArgc &&
+        UIEffectNapiUtils::GetType(env, argValue[NUM_0]) == napi_object, nullptr,
         FILTER_LOG_E("FilterNapi SetBlurBubblesRise parsing input fail"));
 
     auto para = std::make_shared<BlurBubblesRisePara>();
     UIEFFECT_NAPI_CHECK_RET_D(para != nullptr, nullptr,
         FILTER_LOG_E("FilterNapi SetBlurBubblesRise para is nullptr"));
 
+    // Parse blurRadius property
+    napi_value blurRadiusValue;
     float blurRadius = 3.0f;
-    float mixStrength = 1.0f;
-    uint32_t invertMask = 0;
-    uint32_t maskChannel = 0;
-    float progress = 0.0f;
-    std::shared_ptr<Media::PixelMap> maskImage = nullptr;
-    if (argCount >= NUM_1) {
-        blurRadius = GetSpecialValue(env, argValue[NUM_0]);
-    }
-    if (argCount >= NUM_2) {
-        mixStrength = GetSpecialValue(env, argValue[NUM_1]);
-    }
-    if (argCount >= NUM_3) {
-        invertMask = GetSpecialIntValue(env, argValue[NUM_2]);
-    }
-    if (argCount >= NUM_4) {
-        maskChannel = GetSpecialIntValue(env, argValue[NUM_3]);
-    }
-    if (argCount >= NUM_5) {
-        progress = GetSpecialValue(env, argValue[NUM_4]);
-    }
-    
-    if (argCount >= NUM_6) {
-        UIEFFECT_NAPI_CHECK_RET_D(ParsePixelMap(env, argValue[NUM_5], maskImage), nullptr,
-            FILTER_LOG_E("FilterNapi SetBlurBubblesRise parse mask image failed"));
+    if (napi_get_named_property(env, argValue[NUM_0], "blurRadius", &blurRadiusValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, blurRadiusValue) == napi_number) {
+        blurRadius = GetSpecialValue(env, blurRadiusValue);
     }
     para->SetBlurRadius(blurRadius);
+
+    // Parse mixStrength property
+    napi_value mixStrengthValue;
+    float mixStrength = 1.0f;
+    if (napi_get_named_property(env, argValue[NUM_0], "mixStrength", &mixStrengthValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, mixStrengthValue) == napi_number) {
+        mixStrength = GetSpecialValue(env, mixStrengthValue);
+    }
     para->SetMixStrength(mixStrength);
+
+    // Parse invertMask property
+    napi_value invertMaskValue;
+    uint32_t invertMask = 0;
+    if (napi_get_named_property(env, argValue[NUM_0], "invertMask", &invertMaskValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, invertMaskValue) == napi_number) {
+        invertMask = GetSpecialIntValue(env, invertMaskValue);
+    }
     para->SetInvertMask(invertMask);
+
+    // Parse maskChannel property
+    napi_value maskChannelValue;
+    uint32_t maskChannel = 0;
+    if (napi_get_named_property(env, argValue[NUM_0], "maskChannel", &maskChannelValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, maskChannelValue) == napi_number) {
+        maskChannel = GetSpecialIntValue(env, maskChannelValue);
+    }
     para->SetMaskChannel(maskChannel);
+
+    // Parse progress property
+    napi_value progressValue;
+    float progress = 0.0f;
+    if (napi_get_named_property(env, argValue[NUM_0], "progress", &progressValue) == napi_ok &&
+        UIEffectNapiUtils::GetType(env, progressValue) == napi_number) {
+        progress = GetSpecialValue(env, progressValue);
+    }
     para->SetProgress(progress);
+
+    // Parse maskImage property
+    napi_value maskImageValue;
+    std::shared_ptr<Media::PixelMap> maskImage = nullptr;
+    if (napi_get_named_property(env, argValue[NUM_0], "maskImage", &maskImageValue) == napi_ok) {
+        auto valueType = UIEffectNapiUtils::GetType(env, maskImageValue);
+        if (valueType == napi_null || valueType == napi_undefined) {
+            maskImage = nullptr;
+        } else if (valueType == napi_object) {
+            if (!ParsePixelMap(env, maskImageValue, maskImage)) {
+                FILTER_LOG_E("FilterNapi SetBlurBubblesRise parse mask image failed");
+                return thisVar;
+            }
+        }
+    }
     para->SetMaskImage(maskImage);
 
     Filter* filterObj = nullptr;
