@@ -21,10 +21,9 @@
 #include "hdi_display_type.h"
 #include "iconsumer_surface.h"
 #include "rs_layer.h"
-#include "surface_buffer.h"
 #include "rs_layer_cmd_type.h"
-#include "surface_buffer.h"
 #include "surface.h"
+#include "surface_buffer.h"
 #include "sync_fence.h"
 
 namespace OHOS {
