@@ -178,13 +178,20 @@ HWTEST_F(RsRenderComposerManagerTest, OnScreenDisconnected_NotUniRenderEnabled_E
 {
     std::shared_ptr<AppExecFwk::EventHandler> handler = nullptr;
     auto mgr = std::make_shared<RSRenderComposerManager>(handler);
-    mgr->rsRenderComposerAgentMap_.insert(std::pair(77u, nullptr));
+    constexpr ScreenId screenId = 77u;
+    auto output = std::make_shared<HdiOutput>(screenId);
+    output->Init();
+    sptr<RSScreenProperty> property = new RSScreenProperty();
+    auto renderComposer = std::make_shared<RSRenderComposer>(output, property);
+    auto agent = std::make_shared<RSRenderComposerAgent>(renderComposer);
+    mgr->rsRenderComposerAgentMap_.insert(std::pair(screenId, agent));
 
     auto originalType = RSUniRenderJudgement::uniRenderEnabledType_;
     RSUniRenderJudgement::uniRenderEnabledType_ = UniRenderEnabledType::UNI_RENDER_DISABLED;
 
-    mgr->OnScreenDisconnected(77u);
+    mgr->OnScreenDisconnected(screenId);
     EXPECT_EQ(mgr->rsRenderComposerAgentMap_.size(), 1u);
+    EXPECT_NE(mgr->rsRenderComposerAgentMap_.find(screenId), mgr->rsRenderComposerAgentMap_.end());
 
     RSUniRenderJudgement::uniRenderEnabledType_ = originalType;
 }
