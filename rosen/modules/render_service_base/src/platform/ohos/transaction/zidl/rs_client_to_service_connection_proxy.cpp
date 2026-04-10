@@ -3270,7 +3270,11 @@ int32_t RSClientToServiceConnectionProxy::RegisterFirstFrameCommitCallback(
         ROSEN_LOGE("RSClientToServiceConnectionProxy::RegisterFirstFrameCommitCallback: Send Request err.");
         return RS_CONNECTION_ERROR;
     }
-    int32_t result = reply.ReadInt32();
+    int32_t result{0};
+    if (!reply.ReadInt32(result)) {
+        ROSEN_LOGE("RSClientToServiceConnectionProxy::RegisterFirstFrameCommitCallback Read result failed");
+        return READ_PARCEL_ERR;
+    }
     return result;
 }
 
