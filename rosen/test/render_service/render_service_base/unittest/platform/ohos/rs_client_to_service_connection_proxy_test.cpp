@@ -1169,6 +1169,42 @@ HWTEST_F(RSClientToServiceConnectionProxyTest, RegisterFirstFrameCommitCallback,
 }
 
 /**
+ * @tc.name: RegisterFirstFrameCommitCallback_ReadParcelFailed Test
+ * @tc.desc: RegisterFirstFrameCommitCallback reply read failed Test
+ * @tc.type:FUNC
+ * @tc.require: issues23225
+ */
+HWTEST_F(RSClientToServiceConnectionProxyTest, RegisterFirstFrameCommitCallback_ReadParcelFailed, TestSize.Level1)
+{
+    sptr<IRemoteObjectMock> remoteObject = new IRemoteObjectMock;
+    auto mockproxy = std::make_shared<RSClientToServiceConnectionProxy>(remoteObject);
+    EXPECT_CALL(*remoteObject, SendRequest(_, _, _, _)).WillRepeatedly(testing::Return(0));
+    sptr<RSIFirstFrameCommitCallback> callback = nullptr;
+    auto ret = mockproxy->RegisterFirstFrameCommitCallback(callback);
+    EXPECT_EQ(ret, StatusCode::READ_PARCEL_ERR);
+}
+
+/**
+ * @tc.name: RegisterFirstFrameCommitCallback_ReadParcelSuccess Test
+ * @tc.desc: RegisterFirstFrameCommitCallback reply read success Test
+ * @tc.type:FUNC
+ * @tc.require: issues23225
+ */
+HWTEST_F(RSClientToServiceConnectionProxyTest, RegisterFirstFrameCommitCallback_ReadParcelSuccess, TestSize.Level1)
+{
+    sptr<IRemoteObjectMock> remoteObject = new IRemoteObjectMock;
+    auto mockproxy = std::make_shared<RSClientToServiceConnectionProxy>(remoteObject);
+    EXPECT_CALL(*remoteObject, SendRequest(_, _, _, _))
+        .WillRepeatedly([](uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) {
+            reply.WriteInt32(0);
+            return 0;
+        });
+    sptr<RSIFirstFrameCommitCallback> callback = nullptr;
+    auto ret = mockproxy->RegisterFirstFrameCommitCallback(callback);
+    EXPECT_EQ(ret, 0);
+}
+
+/**
  * @tc.name: RegisterExposedEventCallback Test
  * @tc.desc: RegisterExposedEventCallback Test
  * @tc.type:FUNC
