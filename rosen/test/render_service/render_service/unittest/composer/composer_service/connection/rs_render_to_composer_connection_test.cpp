@@ -17,7 +17,6 @@
 #include <memory>
 #include <set>
 
-#ifdef ENABLE_SERVER_CONN_UT
 #include "rs_render_to_composer_connection.h"
 #include "rs_render_composer_agent.h"
 #include "rs_composer_to_render_connection.h"
@@ -173,4 +172,3 @@ HWTEST_F(RSRenderToComposerConnectionTest, Connection_CleanLayerBufferBySurfaceI
     ASSERT_EQ(agent->rsRenderComposer_, nullptr);
 }
 } // namespace OHOS::Rosen
-#endif // ENABLE_SERVER_CONN_UT
