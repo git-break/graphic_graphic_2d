@@ -559,9 +559,9 @@ void RSRenderThread::Animate(uint64_t timestamp)
             ROSEN_LOGD("RSRenderThread::Animate removing expired animating node");
             return true;
         }
-        int64_t unUsedNextFrameTime = 0;
+        int64_t unusedNextFrameTime = 0;
         auto [hasRunningAnimation, nodeNeedRequestNextVsync, nodeCalculateAnimationValue] =
-            node->Animate(timestamp, minLeftDelayTime, unUsedNextFrameTime);
+            node->Animate(timestamp, minLeftDelayTime, unusedNextFrameTime);
         if (!hasRunningAnimation) {
             ROSEN_LOGD("RSRenderThread::Animate removing finished animating node %{public}" PRIu64, node->GetId());
         }

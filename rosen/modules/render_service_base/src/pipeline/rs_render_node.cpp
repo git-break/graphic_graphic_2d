@@ -1726,12 +1726,10 @@ std::tuple<bool, bool, bool> RSRenderNode::Animate(
     int64_t timestamp, int64_t& minLeftDelayTime, int64_t& nextFrameTime, int64_t period, bool isDisplaySyncEnabled)
 {
     RS_PROFILER_ANIMATION_NODE(GetType(), selfDrawRect_.GetWidth() * selfDrawRect_.GetWidth());
-    int64_t currentAnimateNextFrameTime = 0;
+    int64_t nextFrameTimeForThisAnimate = 0;
     bool needSkipCurrentAnimate = displaySync_ &&
-        displaySync_->OnFrameSkipForAnimate(timestamp, period, isDisplaySyncEnabled, currentAnimateNextFrameTime);
-
-    nextFrameTime = (nextFrameTime != 0) ? std::min(nextFrameTime, currentAnimateNextFrameTime) : 0;
-
+        displaySync_->OnFrameSkipForAnimate(timestamp, period, isDisplaySyncEnabled, nextFrameTimeForThisAnimate);
+    nextFrameTime = (nextFrameTime != 0) ? std::min(nextFrameTime, nextFrameTimeForThisAnimate) : 0;
     if (needSkipCurrentAnimate) {
         minLeftDelayTime = 0;
         return displaySync_->GetAnimateResult();
