@@ -74,6 +74,7 @@ class ParticleRippleField;
 class ParticleRippleFields;
 class ParticleVelocityField;
 class ParticleVelocityFields;
+class ParticleFieldCollection;
 template<typename T>
 class RenderParticleParaType;
 class AnnulusRegion;
@@ -260,6 +261,7 @@ public:
     DECLARE_FUNCTION_OVERLOAD(std::shared_ptr<ParticleRippleFields>)
     DECLARE_FUNCTION_OVERLOAD(std::shared_ptr<ParticleVelocityField>)
     DECLARE_FUNCTION_OVERLOAD(std::shared_ptr<ParticleVelocityFields>)
+    DECLARE_FUNCTION_OVERLOAD(std::shared_ptr<ParticleFieldCollection>)
     DECLARE_FUNCTION_OVERLOAD(std::shared_ptr<RSNGRenderFilterBase>)
     DECLARE_FUNCTION_OVERLOAD(std::shared_ptr<RSNGRenderMaskBase>)
     DECLARE_FUNCTION_OVERLOAD(std::shared_ptr<RSNGRenderShaderBase>)
