@@ -103,6 +103,7 @@ enum class RSPropertyType : uint8_t {
     PARTICLE_NOISE_FIELD,
     PARTICLE_RIPPLE_FIELD,
     PARTICLE_VELOCITY_FIELD,
+    PARTICLE_FIELDS,
     RS_MASK,
     WATER_RIPPLE_PARAMS,
     FLY_OUT_PARAMS,
@@ -122,6 +123,7 @@ enum class RSPropertyType : uint8_t {
     SHADOW_BLENDER_PARAMS,
     RS_NG_RENDER_SHAPE_BASE,
     HDR_DARKEN_BLENDER_PARAMS,
+    PARTICLE_FIELDS,
 };
 
 enum class RSPropertyUnit : uint8_t {
