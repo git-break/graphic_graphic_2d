@@ -559,7 +559,7 @@ bool RSRenderNodeDrawable::IsOverlappedWithExistingFilters(Drawing::Canvas& canv
     auto matrix = canvas.GetTotalMatrix();
     Drawing::Rect dst;
     matrix.MapRect(dst, params.GetBounds());
-    return curDrawingCacheRoot_->IntersectsWithUnifiedRegion(dst);
+    return curDrawingCacheRoot_->IntersectsWithUnifiedRegion(dst.RoundOut());
 }
 
 void RSRenderNodeDrawable::ClearDrawingCacheDataMap()

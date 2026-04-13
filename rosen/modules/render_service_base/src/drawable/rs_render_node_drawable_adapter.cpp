@@ -625,20 +625,20 @@ void RSRenderNodeDrawableAdapter::ClearUnifiedFilterRegion()
     unifiedFilterRegion_.SetEmpty();
 }
 
-void RSRenderNodeDrawableAdapter::AddRectToUnifiedFilterRegion(const Drawing::Rect& rect)
+void RSRenderNodeDrawableAdapter::AddRectToUnifiedFilterRegion(const Drawing::RectI& rect)
 {
     Drawing::Region region;
-    region.SetRect(rect.RoundOut());
+    region.SetRect(rect);
     unifiedFilterRegion_.Op(region, Drawing::RegionOp::UNION);
 }
 
-bool RSRenderNodeDrawableAdapter::IntersectsWithUnifiedRegion(const Drawing::Rect& rect) const
+bool RSRenderNodeDrawableAdapter::IntersectsWithUnifiedRegion(const Drawing::RectI& rect) const
 {
     if (unifiedFilterRegion_.IsEmpty()) {
         return false;
     }
     Drawing::Region region;
-    region.SetRect(rect.RoundOut());
+    region.SetRect(rect);
     return !unifiedFilterRegion_.QuickReject(region);
 }
 
