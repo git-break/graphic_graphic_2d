@@ -300,8 +300,8 @@ public:
     }
 
     void ClearUnifiedFilterRegion();
-    void AddRectToUnifiedFilterRegion(const Drawing::Rect& rect);
-    bool IntersectsWithUnifiedRegion(const Drawing::Rect& rect) const;
+    void AddRectToUnifiedFilterRegion(const Drawing::RectI& rect);
+    bool IntersectsWithUnifiedRegion(const Drawing::RectI& rect) const;
 
 protected:
     // Util functions
