@@ -35,7 +35,6 @@ namespace Rosen {
 namespace {
 // 规则11: 修正枚举值范围贴合业务
 constexpr uint8_t SCREEN_POWER_STATUS_SIZE = 5;  // 0-4 (修改: 11->5)
-constexpr size_t STRING_LEN = 10;
 constexpr uint8_t SCREEN_CONSTRAINT_TYPE_SIZE = 4;
 constexpr uint8_t SCREEN_COLOR_GAMUT_SIZE = 8;   // 修改: 12->8
 constexpr uint8_t SCREEN_GAMUT_MAP_SIZE = 4;
