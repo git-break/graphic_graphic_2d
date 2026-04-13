@@ -109,8 +109,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 
     uint8_t tarPos = fdp.ConsumeIntegral<uint8_t>() % OHOS::Rosen::TARGET_SIZE;
     switch (tarPos) {
-        case OHOS::Rosen::DO_START:
-            OHOS::Rosen::DoStart(fdp);
+        case OHOS::Rosen::DO_INSERT_USE_EXCLUSIVE_THREAD_FLAG:
+            OHOS::Rosen::DoInsertUseExclusiveThreadFlag(fdp);
             break;
         case OHOS::Rosen::DO_STOP:
             OHOS::Rosen::DoStop(fdp);
@@ -124,8 +124,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
         case OHOS::Rosen::DO_INSERT_FRAME_RATE_RANGE:
             OHOS::Rosen::DoInsertFrameRateRange(fdp);
             break;
-        case OHOS::Rosen::DO_INSERT_USE_EXCLUSIVE_THREAD_FLAG:
-            OHOS::Rosen::DoInsertUseExclusiveThreadFlag(fdp);
+        case OHOS::Rosen::DO_START:
+            OHOS::Rosen::DoStart(fdp);
             break;
         case OHOS::Rosen::DO_SET_VSYNC_RATE:
             OHOS::Rosen::DoSetVSyncRate(fdp);
