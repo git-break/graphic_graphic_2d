@@ -17,17 +17,17 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "feature/hyper_graphic_manager/rs_ui_display_soloist.h"
 #include "native_display_soloist.h"
 
 namespace OHOS {
 namespace Rosen {
 namespace {
 const uint8_t DO_CREATE = 0;
-const uint8_t DO_DESTROY = 1;
-const uint8_t DO_START = 2;
-const uint8_t DO_STOP = 3;
-const uint8_t DO_SET_EXPECTED_FRAME_RATE_RANGE = 4;
-const uint8_t TARGET_SIZE = 5;
+const uint8_t DO_START = 1;
+const uint8_t DO_STOP = 2;
+const uint8_t DO_SET_EXPECTED_FRAME_RATE_RANGE = 3;
+const uint8_t TARGET_SIZE = 4;
 
 OH_DisplaySoloist* g_displaySoloist = nullptr;
 
@@ -37,17 +37,12 @@ void DoCreate(FuzzedDataProvider& fdp)
         OH_DisplaySoloist_Destroy(g_displaySoloist);
         g_displaySoloist = nullptr;
     }
-    bool useExclusiveThread = false;
+    bool useExclusiveThread = fdp.ConsumeBool();
     g_displaySoloist = OH_DisplaySoloist_Create(useExclusiveThread);
-}
-
-void DoDestroy(FuzzedDataProvider& fdp)
-{
-    (void)fdp;
-    if (g_displaySoloist != nullptr) {
-        OH_DisplaySoloist_Destroy(g_displaySoloist);
-        g_displaySoloist = nullptr;
-    }
+    std::unique_lock<std::mutex> lock(RSDisplaySoloistManager::GetInstance().dataUpdateMtx_);
+    RSDisplaySoloistManager::GetInstance().idToSoloistMap_.clear();
+    OH_DisplaySoloist_Destroy(g_displaySoloist);
+    g_displaySoloist = nullptr;
 }
 
 void DoStart(FuzzedDataProvider& fdp)
@@ -107,9 +102,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     switch (tarPos) {
         case OHOS::Rosen::DO_CREATE:
             OHOS::Rosen::DoCreate(fdp);
-            break;
-        case OHOS::Rosen::DO_DESTROY:
-            OHOS::Rosen::DoDestroy(fdp);
             break;
         case OHOS::Rosen::DO_START:
             OHOS::Rosen::DoStart(fdp);
