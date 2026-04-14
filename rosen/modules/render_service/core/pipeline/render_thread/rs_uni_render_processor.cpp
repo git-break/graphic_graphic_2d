@@ -375,13 +375,13 @@ RSLayerPtr RSUniRenderProcessor::GetLayerInfo(RSSurfaceRenderParams& params, spt
     layer->SetAlpha(alpha);
     GraphicIRect dstRect = { layerInfo.dstRect.x, layerInfo.dstRect.y, layerInfo.dstRect.w, layerinfo.dstRect.h };
     if (layerInfo.layerType != GraphicLayerType::GRAPHIC_LAYER_TYPE_CURSOR) {
-        Drawing::Rect originDstRect = { dstRect.x, dstRect.y, dstRect.x + dstRect.w, dstRect.y + dstRect.h };\
+        Drawing::Rect originDstRect = { dstRect.x, dstRect.y, dstRect.x + dstRect.w, dstRect.y + dstRect.h };
         Drawing::Rect adjustedDstRect = { static_cast<int32_t>(std::floor(originDstRect.GetLeft() * rogWidthRatio)),
             static_cast<int32_t>(std::floor(originDstRect.GetTop() * rogHeightRatio)),
             static_cast<int32_t>(std::ceil(originDstRect.GetRight() * rogWidthRatio)),
             static_cast<int32_t>(std::ceil(originDstRect.GetBottom() * rogHeightRatio)) };
         Drawing::Rect screen = { 0.f, 0.f,
-            uniComposerAdapter_->GetScreenInfo().phyWidth, uniComposerAdapter_->GetScreenInfo().phyHeight() };
+            uniComposerAdapter_->GetScreenInfo().phyWidth, uniComposerAdapter_->GetScreenInfo().phyHeight };
         adjustedDstRect.Intersect(screen);
         dstRect = {adjustedDstRect.left_, adjustedDstRect.top_,
             adjustedDstRect.GetWidth(), adjustedDstRect.GetHeight()};
