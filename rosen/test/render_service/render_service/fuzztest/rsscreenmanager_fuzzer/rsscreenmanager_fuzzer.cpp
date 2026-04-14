@@ -33,23 +33,20 @@
 namespace OHOS {
 namespace Rosen {
 namespace {
-// 规则11: 修正枚举值范围贴合业务
-constexpr uint8_t SCREEN_POWER_STATUS_SIZE = 5;  // 0-4 (修改: 11->5)
+constexpr uint8_t SCREEN_POWER_STATUS_SIZE = 5;
 constexpr uint8_t SCREEN_CONSTRAINT_TYPE_SIZE = 4;
-constexpr uint8_t SCREEN_COLOR_GAMUT_SIZE = 8;   // 修改: 12->8
+constexpr uint8_t SCREEN_COLOR_GAMUT_SIZE = 8;
 constexpr uint8_t SCREEN_GAMUT_MAP_SIZE = 4;
 constexpr uint8_t SCREEN_ROTATION_SIZE = 5;
 constexpr uint8_t SCREEN_SCREEN_TYPE_SIZE = 4;
-constexpr uint8_t SCREEN_HDR_FORMAT_SIZE = 5;   // 修改: 8->5
-constexpr uint8_t GRAPHIC_CM_COLOR_SPACE_TYPE_SIZE = 10;  // 修改: 32->10
-constexpr uint8_t SCREEN_SCALE_MODE_SIZE = 4;   // 修改: 3->4
-constexpr uint8_t GRAPHIC_PIXEL_FORMAT_SIZE = 10;  // 修改: 43->10
+constexpr uint8_t SCREEN_HDR_FORMAT_SIZE = 5;
+constexpr uint8_t GRAPHIC_CM_COLOR_SPACE_TYPE_SIZE = 10;
+constexpr uint8_t SCREEN_SCALE_MODE_SIZE = 4;
+constexpr uint8_t GRAPHIC_PIXEL_FORMAT_SIZE = 10;
 
 const uint8_t* g_data = nullptr;
 size_t g_size = 0;
 size_t g_pos = 0;
-
-// 规则9, 10: 添加已创建屏幕ID列表，用于构造有效前置条件
 std::vector<ScreenId> g_createdScreenIds;
 } // namespace
 
@@ -64,7 +61,6 @@ T GetData()
 {
     T object {};
     size_t objectSize = sizeof(object);
-    // 规则7修复: 避免整数下溢，检查g_pos + objectSize > g_size
     if (g_data == nullptr || objectSize > g_size || g_pos + objectSize > g_size) {
         return object;
     }
@@ -94,7 +90,6 @@ void InitScreenManger()
     screenManager_->Init(handler);
 }
 
-// 规则10: 添加辅助函数，优先使用已创建的屏幕ID
 ScreenId GetScreenId()
 {
     if (!g_createdScreenIds.empty() && GetData<bool>()) {
@@ -104,14 +99,8 @@ ScreenId GetScreenId()
     return GetData<ScreenId>();
 }
 
-// 规则1: 删除无参数API测试（以下3个函数已删除）
-// void GetActiveScreenId() { screenManager_->GetActiveScreenId(); }
-// void GetDefaultScreenId() { screenManager_->GetDefaultScreenId(); }
-// void GetAllScreenIds() { screenManager_->GetAllScreenIds(); }
-
 void SetVirtualScreenRefreshRate()
 {
-    // 规则10修复: 使用GetScreenId()优先使用已创建的屏幕ID
     ScreenId screenId = GetScreenId();
     uint32_t maxRefreshRate = GetData<uint32_t>();
     uint32_t actualRefreshRate = GetData<uint32_t>();
@@ -152,9 +141,8 @@ void GetScreenPowerStatus()
 
 void CreateVirtualScreen()
 {
-    // 规则12: 使用随机长度字符串而非固定长度
     std::string name;
-    size_t nameLen = GetData<size_t>() % 128;  // 修改: 随机长度
+    size_t nameLen = GetData<size_t>() % 128;
     name.reserve(nameLen);
     for (size_t i = 0; i < nameLen && g_pos + 1 < g_size; ++i) {
         name.push_back(GetData<char>());
@@ -166,8 +154,7 @@ void CreateVirtualScreen()
     ScreenId mirrorId = GetData<ScreenId>();
     int32_t flags = GetData<int32_t>();
 
-    // 规则12: 使用随机大小的whiteList
-    size_t whiteListSize = GetData<size_t>() % 128;  // 修改: 随机大小
+    size_t whiteListSize = GetData<size_t>() % 128;
     std::vector<NodeId> whiteList;
     whiteList.reserve(whiteListSize);
     for (size_t i = 0; i < whiteListSize; ++i) {
@@ -175,8 +162,6 @@ void CreateVirtualScreen()
     }
 
     ScreenId screenId = screenManager_->CreateVirtualScreen(name, width, height, surface, mirrorId, flags, whiteList);
-
-    // 记录创建的屏幕ID（规则9, 10）
     if (screenId != INVALID_SCREEN_ID) {
         g_createdScreenIds.push_back(screenId);
     }
@@ -193,8 +178,7 @@ void SetVirtualScreenBlackList()
 {
     ScreenId screenId = GetScreenId();
 
-    // 规则12: 使用随机大小的blocklist
-    size_t blackListSize = GetData<size_t>() % 128;  // 修改: 随机大小
+    size_t blackListSize = GetData<size_t>() % 128;
     std::vector<uint64_t> blocklist;
     blocklist.reserve(blackListSize);
     for (size_t i = 0; i < blackListSize; ++i) {
@@ -208,7 +192,7 @@ void SetVirtualScreenTypeBlackList()
 {
     ScreenId screenId = GetScreenId();
 
-    size_t typeBlackListSize = GetData<size_t>() % 32;  // 修改: 随机大小
+    size_t typeBlackListSize = GetData<size_t>() % 32;
     std::vector<uint8_t> typeBlackList;
     typeBlackList.reserve(typeBlackListSize);
     for (size_t i = 0; i < typeBlackListSize; ++i) {
@@ -222,7 +206,7 @@ void AddVirtualScreenBlackList()
 {
     ScreenId screenId = GetScreenId();
 
-    size_t blackListSize = GetData<size_t>() % 128;  // 修改: 随机大小
+    size_t blackListSize = GetData<size_t>() % 128;
     std::vector<uint64_t> blocklist;
     blocklist.reserve(blackListSize);
     for (size_t i = 0; i < blackListSize; ++i) {
@@ -236,7 +220,7 @@ void RemoveVirtualScreenBlackList()
 {
     ScreenId screenId = GetScreenId();
 
-    size_t blackListSize = GetData<size_t>() % 128;  // 修改: 随机大小
+    size_t blackListSize = GetData<size_t>() % 128;
     std::vector<uint64_t> blocklist;
     blocklist.reserve(blackListSize);
     for (size_t i = 0; i < blackListSize; ++i) {
@@ -250,7 +234,7 @@ void SetVirtualScreenSecurityExemptionList()
 {
     ScreenId screenId = GetScreenId();
 
-    size_t exemptionListSize = GetData<size_t>() % 128;  // 修改: 随机大小
+    size_t exemptionListSize = GetData<size_t>() % 128;
     std::vector<uint64_t> securityExemptionList;
     securityExemptionList.reserve(exemptionListSize);
     for (size_t i = 0; i < exemptionListSize; ++i) {
@@ -264,7 +248,6 @@ void SetMirrorScreenVisibleRect()
 {
     ScreenId screenId = GetScreenId();
 
-    // 规则18: 合理构造Rect参数
     Rect mainScreenRect;
     mainScreenRect.x = GetData<int32_t>();
     mainScreenRect.y = GetData<int32_t>();
@@ -299,7 +282,6 @@ void SetScreenActiveRect()
 {
     ScreenId screenId = GetScreenId();
 
-    // 规则18: 合理构造Rect参数
     Rect activeRect;
     activeRect.x = GetData<int32_t>();
     activeRect.y = GetData<int32_t>();
@@ -481,8 +463,7 @@ void GetDisplayIdentificationData()
     ScreenId screenId = GetScreenId();
     uint8_t outPort = GetData<uint8_t>();
 
-    // 规则12: 使用随机大小的edidData
-    size_t edidSize = GetData<size_t>() % 256;  // 修改: 随机大小
+    size_t edidSize = GetData<size_t>() % 256;
     std::vector<uint8_t> edidData;
     edidData.reserve(edidSize);
     for (size_t i = 0; i < edidSize; ++i) {
@@ -565,19 +546,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::Rosen::InitScreenManger();
 
     using FunctionPtr = void (*)();
-    // 规则1: 从funcVector中删除3个无参数API
-    // 规则3: 测试函数从54个减少到51个
     std::vector<FunctionPtr> funcVector = {
         OHOS::Rosen::InitScreenManger,
-        // OHOS::Rosen::GetActiveScreenId,        // 删除: 无参数
         OHOS::Rosen::SetVirtualScreenRefreshRate,
         OHOS::Rosen::GetVirtualScreenResolution,
         OHOS::Rosen::GetScreenActiveMode,
         OHOS::Rosen::GetScreenSupportedModes,
         OHOS::Rosen::GetScreenCapability,
         OHOS::Rosen::GetScreenPowerStatus,
-        // OHOS::Rosen::GetDefaultScreenId,        // 删除: 无参数
-        // OHOS::Rosen::GetAllScreenIds,           // 删除: 无参数
         OHOS::Rosen::CreateVirtualScreen,
         OHOS::Rosen::SetVirtualScreenBlackList,
         OHOS::Rosen::SetVirtualScreenTypeBlackList,
