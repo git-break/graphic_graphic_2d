@@ -478,7 +478,7 @@ skgpu::VulkanGetProc RsVulkanInterface::CreateSkiaGetProc() const
     };
 }
 
-std::shared_ptr<Drawing::GPUContext> RsVulkanInterface::DoCreateDrawingContext(std::string cacheDir)
+std::shared_ptr<Drawing::GPUContext> RsVulkanInterface::DoCreateDrawingContext()
 {
     std::unique_lock<std::mutex> lock(vkMutex_);
 
@@ -490,9 +490,9 @@ std::shared_ptr<Drawing::GPUContext> RsVulkanInterface::DoCreateDrawingContext(s
     return drawingContext;
 }
 
-std::shared_ptr<Drawing::GPUContext> RsVulkanInterface::CreateDrawingContext(std::string cacheDir)
+std::shared_ptr<Drawing::GPUContext> RsVulkanInterface::CreateDrawingContext()
 {
-    auto drawingContext = DoCreateDrawingContext(cacheDir);
+    auto drawingContext = DoCreateDrawingContext();
     int maxResources = 0;
     size_t maxResourcesSize = 0;
     int cacheLimitsTimes = CACHE_LIMITS_TIMES;
@@ -609,13 +609,13 @@ void RsVulkanInterface::SendSemaphoreWithFd(VkSemaphore semaphore, int fenceFd)
     semaphoreFence.fence = (fenceFd != -1 ? std::make_unique<SyncFence>(fenceFd) : nullptr);
 }
 
-RsVulkanContext::RsVulkanContext(std::string cacheDir)
+RsVulkanContext::RsVulkanContext()
 {
     vulkanInterfaceVec_.resize(size_t(VulkanInterfaceType::MAX_INTERFACE_TYPE));
     if (RsVulkanContext::IsRecyclable()) {
-        InitVulkanContextForHybridRender(cacheDir);
+        InitVulkanContextForHybridRender();
     } else {
-        InitVulkanContextForUniRender(cacheDir);
+        InitVulkanContextForUniRender();
     }
     RsVulkanContext::isInited_ = true;
     RsVulkanContext::isRecyclableSingletonValid_ = true;
@@ -628,26 +628,23 @@ RsVulkanContext::~RsVulkanContext()
     RsVulkanContext::isRecyclableSingletonValid_ = false;
 }
 
-void RsVulkanContext::InitVulkanContextForHybridRender(const std::string& cacheDir)
+void RsVulkanContext::InitVulkanContextForHybridRender()
 {
-    if (cacheDir.empty()) {
-        RS_TRACE_NAME("Init hybrid render vk context without cache dir, this may cause redundant shader compiling.");
-    }
     auto vulkanInterface = std::make_shared<RsVulkanInterface>();
     vulkanInterface->Init(VulkanInterfaceType::BASIC_RENDER, false);
     // init drawing context for RT thread bind to backendContext.
-    vulkanInterface->CreateDrawingContext(cacheDir);
+    vulkanInterface->CreateDrawingContext();
 
     vulkanInterfaceVec_[size_t(VulkanInterfaceType::BASIC_RENDER)] = std::move(vulkanInterface);
 }
 
-void RsVulkanContext::InitVulkanContextForUniRender(const std::string& cacheDir)
+void RsVulkanContext::InitVulkanContextForUniRender()
 {
     // create vulkan interface for render thread.
     auto uniRenderVulkanInterface = std::make_shared<RsVulkanInterface>();
     uniRenderVulkanInterface->Init(VulkanInterfaceType::BASIC_RENDER, false, true);
     // init drawing context for RT thread bind to backendContext.
-    uniRenderVulkanInterface->CreateDrawingContext(cacheDir);
+    uniRenderVulkanInterface->CreateDrawingContext();
     // create vulkan interface for hardware thread (unprotected).
     auto unprotectedReDrawVulkanInterface = std::make_shared<RsVulkanInterface>();
     unprotectedReDrawVulkanInterface->Init(VulkanInterfaceType::UNPROTECTED_REDRAW, false, false);
@@ -658,36 +655,35 @@ void RsVulkanContext::InitVulkanContextForUniRender(const std::string& cacheDir)
     auto protectedReDrawVulkanInterface = std::make_shared<RsVulkanInterface>();
     protectedReDrawVulkanInterface->Init(VulkanInterfaceType::PROTECTED_REDRAW, true, false);
     // DRM needs to adapt vkQueue in the future.
-    protectedReDrawVulkanInterface->CreateDrawingContext(cacheDir);
+    protectedReDrawVulkanInterface->CreateDrawingContext();
     vulkanInterfaceVec_[size_t(VulkanInterfaceType::PROTECTED_REDRAW)] = std::move(protectedReDrawVulkanInterface);
     isProtected_ = false;
 #endif
 }
 
-std::unique_ptr<RsVulkanContext>& RsVulkanContext::GetRecyclableSingletonPtr(const std::string& cacheDir)
+std::unique_ptr<RsVulkanContext>& RsVulkanContext::GetRecyclableSingletonPtr()
 {
     std::lock_guard<std::recursive_mutex> lock(recyclableSingletonMutex_);
-    static std::unique_ptr<RsVulkanContext> recyclableSingleton = std::make_unique<RsVulkanContext>(cacheDir);
+    static std::unique_ptr<RsVulkanContext> recyclableSingleton = std::make_unique<RsVulkanContext>();
     return recyclableSingleton;
 }
 
-RsVulkanContext& RsVulkanContext::GetRecyclableSingleton(const std::string& cacheDir)
+RsVulkanContext& RsVulkanContext::GetRecyclableSingleton()
 {
     std::lock_guard<std::recursive_mutex> lock(recyclableSingletonMutex_);
-    static std::string cacheDirInit = cacheDir;
-    std::unique_ptr<RsVulkanContext>& recyclableSingleton = GetRecyclableSingletonPtr(cacheDirInit);
+    std::unique_ptr<RsVulkanContext>& recyclableSingleton = GetRecyclableSingletonPtr();
     if (recyclableSingleton == nullptr) {
-        recyclableSingleton = std::make_unique<RsVulkanContext>(cacheDirInit);
+        recyclableSingleton = std::make_unique<RsVulkanContext>();
     }
     return *recyclableSingleton;
 }
 
-RsVulkanContext& RsVulkanContext::GetSingleton(const std::string& cacheDir)
+RsVulkanContext& RsVulkanContext::GetSingleton()
 {
     if (isRecyclable_) {
-        return RsVulkanContext::GetRecyclableSingleton(cacheDir);
+        return RsVulkanContext::GetRecyclableSingleton();
     }
-    static RsVulkanContext singleton = RsVulkanContext(cacheDir);
+    static RsVulkanContext singleton = RsVulkanContext();
     return singleton;
 }
 
@@ -720,10 +716,10 @@ void RsVulkanContext::ReleaseRecyclableSingleton()
     }
 }
 
-std::shared_ptr<Drawing::GPUContext> RsVulkanContext::GetRecyclableDrawingContext(const std::string& cacheDir)
+std::shared_ptr<Drawing::GPUContext> RsVulkanContext::GetRecyclableDrawingContext()
 {
     // 1. get or create drawing context and save it in the map
-    auto drawingContext = RsVulkanContext::GetDrawingContext(cacheDir);
+    auto drawingContext = RsVulkanContext::GetDrawingContext();
 
     // 2. set recyclable tag for drawingContext when it's valid (i.e it's in the map)
     static thread_local int tidForRecyclable = gettid();
@@ -891,7 +887,7 @@ std::shared_ptr<Drawing::GPUContext> RsVulkanContext::CreateDrawingContext()
     return GetRsVulkanInterface().CreateDrawingContext();
 }
 
-std::shared_ptr<Drawing::GPUContext> RsVulkanContext::GetDrawingContext(const std::string& cacheDir)
+std::shared_ptr<Drawing::GPUContext> RsVulkanContext::GetDrawingContext()
 {
     static thread_local int tidForRecyclable = gettid();
     {
@@ -908,7 +904,7 @@ std::shared_ptr<Drawing::GPUContext> RsVulkanContext::GetDrawingContext(const st
             }
         }
     }
-    return GetRsVulkanInterface().CreateDrawingContext(cacheDir);
+    return GetRsVulkanInterface().CreateDrawingContext();
 }
 
 bool RsVulkanContext::GetIsProtected() const

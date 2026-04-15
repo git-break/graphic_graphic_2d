@@ -270,8 +270,8 @@ public:
         return std::to_string(VK_API_VERSION_1_2);
     }
 
-    std::shared_ptr<Drawing::GPUContext> CreateDrawingContext(std::string cacheDir = "");
-    std::shared_ptr<Drawing::GPUContext> DoCreateDrawingContext(std::string cacheDir = "");
+    std::shared_ptr<Drawing::GPUContext> CreateDrawingContext();
+    std::shared_ptr<Drawing::GPUContext> DoCreateDrawingContext();
     std::shared_ptr<Drawing::GPUContext> GetDrawingContext();
 
     VulkanInterfaceType GetInterfaceType() const
@@ -358,11 +358,11 @@ public:
     private:
         std::function<void()> destructCallback_;
     };
-    static RsVulkanContext& GetSingleton(const std::string& cacheDir = "");
+    static RsVulkanContext& GetSingleton();
     static void ReleaseRecyclableSingleton();
-    explicit RsVulkanContext(std::string cacheDir = "");
-    void InitVulkanContextForHybridRender(const std::string& cacheDir);
-    void InitVulkanContextForUniRender(const std::string& cacheDir);
+    explicit RsVulkanContext();
+    void InitVulkanContextForHybridRender();
+    void InitVulkanContextForUniRender();
     ~RsVulkanContext();
 
     RsVulkanContext(const RsVulkanContext&) = delete;
@@ -416,8 +416,8 @@ public:
     }
 
     std::shared_ptr<Drawing::GPUContext> CreateDrawingContext();
-    std::shared_ptr<Drawing::GPUContext> GetDrawingContext(const std::string& cacheDir = "");
-    std::shared_ptr<Drawing::GPUContext> GetRecyclableDrawingContext(const std::string& cacheDir = "");
+    std::shared_ptr<Drawing::GPUContext> GetDrawingContext();
+    std::shared_ptr<Drawing::GPUContext> GetRecyclableDrawingContext();
     static void ReleaseDrawingContextMap();
     static void ReleaseRecyclableDrawingContext();
     static void ReleaseDrawingContextForThread(int tid);
@@ -443,8 +443,8 @@ public:
     static bool IsRecyclableSingletonValid();
 
 private:
-    static RsVulkanContext& GetRecyclableSingleton(const std::string& cacheDir = "");
-    static std::unique_ptr<RsVulkanContext>& GetRecyclableSingletonPtr(const std::string& cacheDir = "");
+    static RsVulkanContext& GetRecyclableSingleton();
+    static std::unique_ptr<RsVulkanContext>& GetRecyclableSingletonPtr();
     static bool CheckDrawingContextRecyclable();
     static thread_local bool isProtected_;
     static thread_local VulkanInterfaceType vulkanInterfaceType_;
