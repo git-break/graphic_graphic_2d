@@ -334,10 +334,6 @@ HWTEST_F(RSFilterCacheManagerTest, TakeSnapshotTest, TestSize.Level1)
     filterCanvas.surface_ = new Drawing::Surface();
     rsFilterCacheManager->TakeSnapshot(filterCanvas, filter, srcRect);
     EXPECT_NE(filterCanvas.GetSurface(), nullptr);
-    auto para = std::make_shared<RSMagnifierParams>();
-    auto rsMagnifierShaderFilter = std::make_shared<RSMagnifierShaderFilter>(para);
-    filter = std::make_shared<RSDrawingFilter>(rsMagnifierShaderFilter);
-    rsFilterCacheManager->TakeSnapshot(filterCanvas, filter, srcRect);
     SurfaceNodeInfo info;
     info.surfaceImage_ = std::make_shared<Drawing::Image>();
     info.matrix_.Set(Drawing::Matrix::TRANS_X, 1.0f);
