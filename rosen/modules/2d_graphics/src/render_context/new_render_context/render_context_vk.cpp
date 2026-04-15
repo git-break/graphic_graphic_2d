@@ -53,7 +53,7 @@ bool RenderContextVK::SetUpGpuContext(std::shared_ptr<Drawing::GPUContext> drawi
         return true;
     }
     if (drawingContext == nullptr) {
-        drawingContext = RsVulkanContext::GetSingleton(cacheDir_).CreateDrawingContext();
+        drawingContext = RsVulkanContext::GetSingleton().CreateDrawingContext();
     }
     std::shared_ptr<Drawing::GPUContext> drGPUContext(drawingContext);
     drGPUContext_ = std::move(drGPUContext);
