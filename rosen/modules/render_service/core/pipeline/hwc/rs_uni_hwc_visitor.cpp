@@ -538,7 +538,7 @@ void RSUniHwcVisitor::UpdateHwcNodeEnable()
             }
         }
         if (RSSystemParameters::GetArsrPreEnabled() &&
-            RSUniHwcPrevalidateUtil::GetInstance().CheckIfDoArsrPre(surfaceNode)) {
+            surfaceNode->CheckIfDoArsrPre()) {
             surfaceNode->SetArsrTag(true);
         }
         UpdateHwcNodeEnableByGlobalFilter(surfaceNode);
@@ -981,7 +981,7 @@ bool RSUniHwcVisitor::IsHveBlurFilterEnabled(
 {
     if (!RSSystemParameters::GetHveBlurEnabled() ||
         !HveFilter::GetHveFilter().CheckPrecondition(renderNode, filter.second, hwcNode) ||
-        RSHdrUtil::CheckIsHdrSurface(hwcNode)) {
+        hwcNode.GetVideoHdrStatus() != HdrStatus::NO_HDR) {
         return false;
     }
     RS_OPTIONAL_TRACE_FMT("%s: id:%" PRIu64 " isHveEnabled with filterId:% " PRIu64,
