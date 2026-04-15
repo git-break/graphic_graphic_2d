@@ -1000,20 +1000,20 @@ void RSUniHwcVisitor::UpdateHwcNodeEnableByGlobalCleanFilter(
     for (auto filter = cleanFilter.begin(); filter != cleanFilter.end(); ++filter) {
         auto geo = hwcNode.GetRenderProperties().GetBoundsGeometry();
         if (!geo->GetAbsRect().IntersectRect(filter->second).IsEmpty()) {
-            auto& filterNode = nodeMap.GetRenderNode<RSRenderNode>(filter->first);
-            if (filterNode == nullptr) {
-                RS_LOGD("UpdateHwcNodeByFilter: filterNode is null");
+            auto& renderNode = nodeMap.GetRenderNode<RSRenderNode>(filter->first);
+            if (renderNode == nullptr) {
+                RS_LOGD("UpdateHwcNodeByFilter: renderNode is null");
                 continue;
             }
 
-            if (filterNode->IsAIBarFilter()) {
+            if (renderNode->IsAIBarFilter()) {
                 // curScreenNode_ is guaranteed not nullptr in UpdateHwcNodeEnable
                 auto screenId = uniRenderVisitor_.curScreenNode_->GetScreenId();
-                RSMainThread::Instance()->GetMutableAIBarNodes()[screenId].insert(filterNode);
+                RSMainThread::Instance()->GetMutableAIBarNodes()[screenId].insert(renderNode);
                 intersectedWithAIBar = true;
                 bool intersectHwcDamage = RSSystemProperties::GetAIBarOptEnabled() ?
                     RSSurfaceRenderNodeUtils::IntersectHwcDamageWith(hwcNode, filter->second) : true;
-                if (filterNode->CheckAndUpdateAIBarCacheStatus(intersectHwcDamage)) {
+                if (renderNode->CheckAndUpdateAIBarCacheStatus(intersectHwcDamage)) {
                     RS_LOGD("UpdateHwcNodeByFilter: skip intersection for using cache");
                     continue;
                 } else if (RSSystemProperties::GetHveFilterEnabled()) {
@@ -1021,7 +1021,7 @@ void RSUniHwcVisitor::UpdateHwcNodeEnableByGlobalCleanFilter(
                     continue;
                 }
             }
-            if (IsHveBlurFilterEnabled(*filterNode, *filter, hwcNode)) {
+            if (IsHveBlurFilterEnabled(*renderNode, *filter, hwcNode)) {
                 continue;
             }
             auto parentNode = hwcNode.GetParent().lock();
