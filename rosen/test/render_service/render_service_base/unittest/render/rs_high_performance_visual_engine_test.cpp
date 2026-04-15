@@ -14,12 +14,12 @@
  */
 #include "gtest/gtest.h"
 
-#include "utils/rect.h"
-#include "render/rs_high_performance_visual_engine.h"
-#include "pipeline/rs_surface_render_node.h"
-#include "pipeline/rs_effect_render_node.h"
 #include "pipeline/rs_canvas_render_node.h"
+#include "pipeline/rs_effect_render_node.h"
 #include "pipeline/rs_paint_filter_canvas.h"
+#include "pipeline/rs_surface_render_node.h"
+#include "render/rs_high_performance_visual_engine.h"
+#include "utils/rect.h"
 
 using namespace testing;
 using namespace testing::ext;
