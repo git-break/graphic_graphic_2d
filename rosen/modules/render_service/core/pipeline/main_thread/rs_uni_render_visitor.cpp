@@ -1518,7 +1518,7 @@ bool RSUniRenderVisitor::IsSourceNodeDirty(RSSurfaceRenderNode& sourceNode)
             if (node->IsDirty() || node->IsSubTreeDirty()) {
                 return true;
             }
-            if (node->dirtyManager_ && 
+            if (node->dirtyManager_ &&
                 !node->dirtyManager_->GetCurrentFrameDirtyRegion().IsEmpty()) {
                 return true;
             }
