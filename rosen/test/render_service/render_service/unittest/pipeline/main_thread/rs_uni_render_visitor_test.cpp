@@ -9763,7 +9763,7 @@ HWTEST_F(RSUniRenderVisitorTest, IsSourceNodeDirtyTest004, TestSize.Level1)
     childConfig.id = 8;
     NodeId canvasNodeId = 9;
     auto childNode = std::make_shared<RSSurfaceRenderNode>(childConfig, rsContext->weak_from_this());
-    auto canvasChildNode = std::make_shared<RSCanvasRenderNode>(canvasNodeId, rsContext->weak_from_this
+    auto canvasChildNode = std::make_shared<RSCanvasRenderNode>(canvasNodeId, rsContext->weak_from_this());
     ASSERT_NE(childNode, nullptr);
     childNode->InitRenderParams();
 
