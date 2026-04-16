@@ -17,6 +17,7 @@
 #include "rs_graphic_test_img.h"
 
 #include "ui_effect/property/include/rs_ui_shader_base.h"
+#include "ui_effect/property/include/rs_ui_mask_base.h"
 
 using namespace testing;
 using namespace testing::ext;
@@ -667,6 +668,411 @@ GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
         auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
             { i * OFFSET_280 + OFFSET_50, OFFSET_100, NODE_SIZE_250, NODE_SIZE_250 });
         testNode->SetBackgroundNGShader(shader1);
+        GetRootNode()->AddChild(testNode);
+        RegisterNode(testNode);
+    }
+}
+
+/* Mask Test: SpatialPointLight with RippleMask */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_Ripple_Test_001)
+{
+    auto rippleMask = std::make_shared<Rosen::RSNGRippleMask>();
+    rippleMask->Setter<Rosen::RippleMaskRadiusTag>(5.0f);
+    rippleMask->Setter<Rosen::RippleMaskWidthTag>(5.0f);
+    rippleMask->Setter<Rosen::RippleMaskCenterTag>(Vector2f(0.5f, 0.5f));
+    rippleMask->Setter<Rosen::RippleMaskOffsetTag>(0.0f);
+
+    auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(rippleMask));
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetBackgroundNGShader(shader);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with RadialGradientMask */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_RadialGradient_Test_001)
+{
+    auto radialMask = std::make_shared<Rosen::RSNGRadialGradientMask>();
+    radialMask->Setter<Rosen::RadialGradientMaskCenterTag>(Vector2f(0.5f, 0.5f));
+    radialMask->Setter<Rosen::RadialGradientMaskRadiusXTag>(0.3f);
+    radialMask->Setter<Rosen::RadialGradientMaskRadiusYTag>(0.3f);
+    radialMask->Setter<Rosen::RadialGradientMaskColorsTag>(std::vector<float>{1.0f, 0.0f});
+    radialMask->Setter<Rosen::RadialGradientMaskPositionsTag>(std::vector<float>{0.0f, 1.0f});
+
+    auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(radialMask));
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetBackgroundNGShader(shader);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with WaveGradientMask */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_WaveGradient_Test_001)
+{
+    auto waveMask = std::make_shared<Rosen::RSNGWaveGradientMask>();
+    waveMask->Setter<Rosen::WaveGradientMaskWaveCenterTag>(Vector2f(0.5f, 0.5f));
+    waveMask->Setter<Rosen::WaveGradientMaskWaveWidthTag>(0.2f);
+    waveMask->Setter<Rosen::WaveGradientMaskPropagationRadiusTag>(0.5f);
+    waveMask->Setter<Rosen::WaveGradientMaskBlurRadiusTag>(0.1f);
+    waveMask->Setter<Rosen::WaveGradientMaskTurbulenceStrengthTag>(0.5f);
+
+    auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(waveMask));
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetBackgroundNGShader(shader);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with DoubleRippleMask */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_DoubleRipple_Test_001)
+{
+    auto doubleRippleMask = std::make_shared<Rosen::RSNGDoubleRippleMask>();
+    doubleRippleMask->Setter<Rosen::DoubleRippleMaskRadiusTag>(5.0f);
+    doubleRippleMask->Setter<Rosen::DoubleRippleMaskWidthTag>(5.0f);
+    doubleRippleMask->Setter<Rosen::DoubleRippleMaskCenter1Tag>(Vector2f(0.3f, 0.3f));
+    doubleRippleMask->Setter<Rosen::DoubleRippleMaskCenter2Tag>(Vector2f(0.7f, 0.7f));
+    doubleRippleMask->Setter<Rosen::DoubleRippleMaskTurbulenceTag>(0.5f);
+    doubleRippleMask->Setter<Rosen::DoubleRippleMaskHaloThicknessTag>(2.0f);
+
+    auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(doubleRippleMask));
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetBackgroundNGShader(shader);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with RippleMask different centers */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_Ripple_Centers_Test_001)
+{
+    Vector2f centers[] = {
+        Vector2f(0.0f, 0.0f),
+        Vector2f(0.5f, 0.5f),
+        Vector2f(1.0f, 1.0f),
+        Vector2f(0.25f, 0.75f)
+    };
+    for (int i = 0; i < 4; i++) {
+        auto rippleMask = std::make_shared<Rosen::RSNGRippleMask>();
+        rippleMask->Setter<Rosen::RippleMaskRadiusTag>(5.0f);
+        rippleMask->Setter<Rosen::RippleMaskWidthTag>(5.0f);
+        rippleMask->Setter<Rosen::RippleMaskCenterTag>(centers[i]);
+        rippleMask->Setter<Rosen::RippleMaskOffsetTag>(0.0f);
+
+        auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+        shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+        shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+            Vector3f(OFFSET_175, OFFSET_175, 50.0f));
+        shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+        shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+        shader->Setter<Rosen::SpatialPointLightMaskTag>(
+            std::static_pointer_cast<Rosen::RSNGMaskBase>(rippleMask));
+
+        auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+            { i * OFFSET_280 + OFFSET_50, OFFSET_100, NODE_SIZE_250, NODE_SIZE_250 });
+        testNode->SetBackgroundNGShader(shader);
+        GetRootNode()->AddChild(testNode);
+        RegisterNode(testNode);
+    }
+}
+
+/* Mask Test: SpatialPointLight with RippleMask different radii */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_Ripple_Radii_Test_001)
+{
+    float radii[] = { 0.0f, 2.5f, 5.0f, 10.0f };
+    for (int i = 0; i < 4; i++) {
+        auto rippleMask = std::make_shared<Rosen::RSNGRippleMask>();
+        rippleMask->Setter<Rosen::RippleMaskRadiusTag>(radii[i]);
+        rippleMask->Setter<Rosen::RippleMaskWidthTag>(5.0f);
+        rippleMask->Setter<Rosen::RippleMaskCenterTag>(Vector2f(0.5f, 0.5f));
+        rippleMask->Setter<Rosen::RippleMaskOffsetTag>(0.0f);
+
+        auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+        shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+        shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+            Vector3f(OFFSET_175, OFFSET_175, 50.0f));
+        shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+        shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+        shader->Setter<Rosen::SpatialPointLightMaskTag>(
+            std::static_pointer_cast<Rosen::RSNGMaskBase>(rippleMask));
+
+        auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+            { i * OFFSET_280 + OFFSET_50, OFFSET_100, NODE_SIZE_250, NODE_SIZE_250 });
+        testNode->SetBackgroundNGShader(shader);
+        GetRootNode()->AddChild(testNode);
+        RegisterNode(testNode);
+    }
+}
+
+/* Mask Test: SpatialPointLight with mask + border combination */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_Border_Test_001)
+{
+    auto rippleMask = std::make_shared<Rosen::RSNGRippleMask>();
+    rippleMask->Setter<Rosen::RippleMaskRadiusTag>(5.0f);
+    rippleMask->Setter<Rosen::RippleMaskWidthTag>(5.0f);
+    rippleMask->Setter<Rosen::RippleMaskCenterTag>(Vector2f(0.5f, 0.5f));
+
+    auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(rippleMask));
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetBorderWidth(20);
+    testNode->SetBorderColor(COLOR_GREEN);
+    testNode->SetBackgroundNGShader(shader);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with mask + corner radius */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_CornerRadius_Test_001)
+{
+    auto radialMask = std::make_shared<Rosen::RSNGRadialGradientMask>();
+    radialMask->Setter<Rosen::RadialGradientMaskCenterTag>(Vector2f(0.5f, 0.5f));
+    radialMask->Setter<Rosen::RadialGradientMaskRadiusXTag>(0.3f);
+    radialMask->Setter<Rosen::RadialGradientMaskRadiusYTag>(0.3f);
+    radialMask->Setter<Rosen::RadialGradientMaskColorsTag>(std::vector<float>{1.0f, 0.0f});
+    radialMask->Setter<Rosen::RadialGradientMaskPositionsTag>(std::vector<float>{0.0f, 1.0f});
+
+    auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(radialMask));
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetCornerRadius(50);
+    testNode->SetBackgroundNGShader(shader);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with mask + alpha */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_Alpha_Test_001)
+{
+    auto waveMask = std::make_shared<Rosen::RSNGWaveGradientMask>();
+    waveMask->Setter<Rosen::WaveGradientMaskWaveCenterTag>(Vector2f(0.5f, 0.5f));
+    waveMask->Setter<Rosen::WaveGradientMaskWaveWidthTag>(0.2f);
+    waveMask->Setter<Rosen::WaveGradientMaskPropagationRadiusTag>(0.5f);
+
+    auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(waveMask));
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetAlpha(0.7f);
+    testNode->SetBackgroundNGShader(shader);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with mask + cascade */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_Cascade_Test_001)
+{
+    auto rippleMask = std::make_shared<Rosen::RSNGRippleMask>();
+    rippleMask->Setter<Rosen::RippleMaskRadiusTag>(5.0f);
+    rippleMask->Setter<Rosen::RippleMaskWidthTag>(5.0f);
+    rippleMask->Setter<Rosen::RippleMaskCenterTag>(Vector2f(0.5f, 0.5f));
+
+    auto shader1 = std::make_shared<Rosen::RSNGSpatialPointLight>();
+    shader1->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+    shader1->Setter<Rosen::SpatialPointLightLightPositionTag>(
+        Vector3f(OFFSET_200, OFFSET_200, 50.0f));
+    shader1->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+    shader1->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+    shader1->Setter<Rosen::SpatialPointLightMaskTag>(
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(rippleMask));
+
+    auto shader2 = std::make_shared<Rosen::RSNGBorderLight>();
+    shader2->Setter<Rosen::BorderLightPositionTag>(Vector3f(0.5f, 0.5f, 0.0f));
+    shader2->Setter<Rosen::BorderLightColorTag>(Vector4f(0.5f, 0.5f, 0.5f, 1.0f));
+    shader2->Setter<Rosen::BorderLightIntensityTag>(0.8f);
+    shader2->Setter<Rosen::BorderLightWidthTag>(3.0f);
+    shader2->Setter<Rosen::BorderLightCornerRadiusTag>(30.0f);
+
+    shader1->Append(shader2);
+
+    auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+        { OFFSET_100, OFFSET_100, NODE_SIZE_400, NODE_SIZE_400 });
+    testNode->SetBackgroundNGShader(shader1);
+    GetRootNode()->AddChild(testNode);
+    RegisterNode(testNode);
+}
+
+/* Mask Test: SpatialPointLight with different mask types */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Mask_Types_Test_001)
+{
+    std::shared_ptr<Rosen::RSNGMaskBase> masks[] = {
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(std::make_shared<Rosen::RSNGRippleMask>()),
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(std::make_shared<Rosen::RSNGRadialGradientMask>()),
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(std::make_shared<Rosen::RSNGWaveGradientMask>()),
+        std::static_pointer_cast<Rosen::RSNGMaskBase>(std::make_shared<Rosen::RSNGDoubleRippleMask>())
+    };
+
+    for (int i = 0; i < 4; i++) {
+        auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+        shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+        shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+            Vector3f(OFFSET_175, OFFSET_175, 50.0f));
+        shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+        shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+        shader->Setter<Rosen::SpatialPointLightMaskTag>(masks[i]);
+
+        auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+            { i * OFFSET_280 + OFFSET_50, OFFSET_100, NODE_SIZE_250, NODE_SIZE_250 });
+        testNode->SetBackgroundNGShader(shader);
+        GetRootNode()->AddChild(testNode);
+        RegisterNode(testNode);
+    }
+}
+
+/* Animation Test: SpatialPointLight with intensity animation values */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Animation_Intensity_Test_001)
+{
+    float animIntensity[] = { 0.0f, 0.25f, 0.5f, 0.75f, 1.0f, 1.25f };
+    for (int i = 0; i < 6; i++) {
+        auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+        shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(animIntensity[i]);
+        shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+            Vector3f(OFFSET_175, OFFSET_175, 50.0f));
+        shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+        shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+
+        auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+            { (i % 3) * OFFSET_380 + OFFSET_50, (i / 3) * OFFSET_380 + OFFSET_50,
+              NODE_SIZE_350, NODE_SIZE_350 });
+        testNode->SetBackgroundNGShader(shader);
+        GetRootNode()->AddChild(testNode);
+        RegisterNode(testNode);
+    }
+}
+
+/* Animation Test: SpatialPointLight with position animation values */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Animation_Position_Test_001)
+{
+    float animProgress[] = { 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f };
+    for (int i = 0; i < 6; i++) {
+        float x = animProgress[i] * NODE_SIZE_350;
+        float y = animProgress[i] * NODE_SIZE_350;
+        auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+        shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+        shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+            Vector3f(x, y, 50.0f + animProgress[i] * 100.0f));
+        shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+        shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+
+        auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+            { (i % 3) * OFFSET_380 + OFFSET_50, (i / 3) * OFFSET_380 + OFFSET_50,
+              NODE_SIZE_350, NODE_SIZE_350 });
+        testNode->SetBackgroundNGShader(shader);
+        GetRootNode()->AddChild(testNode);
+        RegisterNode(testNode);
+    }
+}
+
+/* Animation Test: SpatialPointLight with attenuation animation */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Animation_Attenuation_Test_001)
+{
+    float animAttenuation[] = { 0.0f, 0.25f, 0.5f, 0.75f, 1.0f, 2.0f };
+    for (int i = 0; i < 6; i++) {
+        auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+        shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+        shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+            Vector3f(OFFSET_175, OFFSET_175, 50.0f));
+        shader->Setter<Rosen::SpatialPointLightLightColorTag>(ColorToVector4f(COLOR_WHITE));
+        shader->Setter<Rosen::SpatialPointLightAttenuationTag>(animAttenuation[i]);
+
+        auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+            { (i % 3) * OFFSET_380 + OFFSET_50, (i / 3) * OFFSET_380 + OFFSET_50,
+              NODE_SIZE_350, NODE_SIZE_350 });
+        testNode->SetBackgroundNGShader(shader);
+        GetRootNode()->AddChild(testNode);
+        RegisterNode(testNode);
+    }
+}
+
+/* Animation Test: SpatialPointLight with color animation */
+GRAPHIC_TEST(SpatialPointLightShaderTest, CONTENT_DISPLAY_TEST,
+    SpatialPointLightShader_Animation_Color_Test_001)
+{
+    float animAlpha[] = { 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f };
+    for (int i = 0; i < 6; i++) {
+        auto shader = std::make_shared<Rosen::RSNGSpatialPointLight>();
+        shader->Setter<Rosen::SpatialPointLightLightIntensityTag>(INTENSITY_1_0F);
+        shader->Setter<Rosen::SpatialPointLightLightPositionTag>(
+            Vector3f(OFFSET_175, OFFSET_175, 50.0f));
+        shader->Setter<Rosen::SpatialPointLightLightColorTag>(
+            Vector4f(animAlpha[i], 1.0f - animAlpha[i], 0.5f, 1.0f));
+        shader->Setter<Rosen::SpatialPointLightAttenuationTag>(ATTENUATION_0_5F);
+
+        auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH,
+            { (i % 3) * OFFSET_380 + OFFSET_50, (i / 3) * OFFSET_380 + OFFSET_50,
+              NODE_SIZE_350, NODE_SIZE_350 });
+        testNode->SetBackgroundNGShader(shader);
         GetRootNode()->AddChild(testNode);
         RegisterNode(testNode);
     }
