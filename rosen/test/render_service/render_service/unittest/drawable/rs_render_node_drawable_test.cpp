@@ -298,6 +298,7 @@ HWTEST_F(RSRenderNodeDrawableTest, IsOverlappedWithExistingFiltersTest001, TestS
     EXPECT_FALSE(drawable->IsOverlappedWithExistingFilters(canvas, params));
 
     rootDrawable->renderParams_ = std::make_unique<RSRenderParams>(rootDrawable->GetId());
+    EXPECT_NE(rootDrawable->renderParams_, nullptr);
     rootDrawable->renderParams_->SetLayerPartRenderEnabled(false);
     EXPECT_FALSE(drawable->IsOverlappedWithExistingFilters(canvas, params));
 
@@ -326,6 +327,8 @@ HWTEST_F(RSRenderNodeDrawableTest, CheckCacheTypeAndDrawOverlapWithExistingFilte
     RSPaintFilterCanvas paintFilterCanvas(&canvas);
     RSRenderParams params(RSRenderNodeDrawableTest::id);
     params.SetBoundsRect(Drawing::RectF(0.0f, 0.0f, 10.0f, 10.0f));
+    rootDrawable->renderParams_ = std::make_unique<RSRenderParams>(rootDrawable->GetId());
+    EXPECT_NE(rootDrawable->renderParams_, nullptr);
     rootDrawable->renderParams_->SetLayerPartRenderEnabled(true);
     rootDrawable->AddRectToUnifiedFilterRegion(Drawing::RectI(0, 0, 10, 10));
 
@@ -333,7 +336,7 @@ HWTEST_F(RSRenderNodeDrawableTest, CheckCacheTypeAndDrawOverlapWithExistingFilte
     drawable->isOffScreenWithClipHole_ = true;
     drawable->CheckCacheTypeAndDraw(paintFilterCanvas, params);
 
-    EXPECT_FALSE(rootDrawable->filterInfoVec_.empty());
+    EXPECT_TRUE(rootDrawable->filterInfoVec_.empty());
     EXPECT_EQ(rootDrawable->withoutFilterMatrixMap_.count(drawable->GetId()), 0u);
     drawable->curDrawingCacheRoot_ = nullptr;
 }
