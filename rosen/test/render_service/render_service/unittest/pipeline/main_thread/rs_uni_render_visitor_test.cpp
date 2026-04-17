@@ -1873,13 +1873,14 @@ HWTEST_F(RSUniRenderVisitorTest, PrepareForCloneNode002, TestSize.Level1)
 
     surfaceRenderNode->InitRenderParams();
     surfaceRenderNode->SetRelated(true);
+    ASSERT_TRUE(surfaceRenderNode->IsRelated());
     surfaceRenderNodeCloned->ResetDirtyStatus();
     result = rsUniRenderVisitor->PrepareForCloneNode(*surfaceRenderNode);
     ASSERT_TRUE(result);
     surfaceRenderNodeCloned->SetDirty();
     result = rsUniRenderVisitor->PrepareForCloneNode(*surfaceRenderNode);
     ASSERT_FALSE(result);
-    
+
     surfaceRenderNodeCloned->SetSurfaceNodeType(RSSurfaceNodeType::NODE_MAX);
     result = rsUniRenderVisitor->PrepareForCloneNode(*surfaceRenderNode);
     ASSERT_FALSE(result);
