@@ -42,7 +42,6 @@ constexpr int OFFSET_510 = 510;
 constexpr int MASK_TYPE_RIPPLE = 0;
 constexpr int MASK_TYPE_RADIAL_GRADIENT = 1;
 constexpr int MASK_TYPE_WAVE_GRADIENT = 2;
-constexpr int MASK_TYPE_DOUBLE_RIPPLE = 3;
 const std::string TEST_IMAGE_PATH = "/data/local/tmp/fg_test.jpg";
 
 std::shared_ptr<RSNGMaskBase> CreateMaskByIndex(int index)
