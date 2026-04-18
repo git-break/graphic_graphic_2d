@@ -372,7 +372,7 @@ void RSNodeCommandHelper::MarkLayer(RSContext& context, NodeId nodeId, bool isLa
         if (RSSystemProperties::GetLayerDebugEnabled()) {
             std::vector<NodeId> nodeIds;
             node->CollectAllChildren(node, nodeIds);
-            RS_OPTIONAL_TRACE_NAME_FMT("Layer node childs number:%d id:%llu", static_cast<int>(nodeIds.size()), node->GetId());
+            RS_OPTIONAL_TRACE_NAME_FMT("Layer node childs number:%zu id:%llu", nodeIds.size(), node->GetId());
         }
     }
 }
