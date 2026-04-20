@@ -1032,7 +1032,7 @@ void RSMaterialFilterDrawable::OnDraw(Drawing::Canvas* canvas, const Drawing::Re
     RS_TRACE_NAME_FMT("RSMaterialFilterDrawable::OnDraw node[%llu] ", renderNodeId_);
     if (rect) {
         filter->SetGeometry(canvas->GetTotalMatrix(), Drawing::Rect(snapshotRect), Drawing::Rect(drawRect),
-            snapshotRelativeRect.GetWidth(), snapshotRelativeRect.GetHeight());
+            rect->GetWidth(), rect->GetHeight());
     }
     int64_t startBlurTime = Drawing::PerfmonitorReporter::GetCurrentTime();
     RSPropertyDrawableUtils::DrawFilter(canvas, filter_,
