@@ -80,6 +80,7 @@ HWTEST_F(RSNodeCommandTest, MarkLayerTest, TestSize.Level1)
 {
     {
         const std::string debugKey = "rosen.graphic.layerDebugEnabled";
+        const std::string oldDebugValue = system::GetParameter(debugKey, "0");
         (void)system::SetParameter(debugKey, "1");
         EXPECT_TRUE(RSSystemProperties::GetLayerDebugEnabled());
 
@@ -92,10 +93,12 @@ HWTEST_F(RSNodeCommandTest, MarkLayerTest, TestSize.Level1)
         isLayer = true;
         RSNodeCommandHelper::MarkLayer(context, nodeId, isLayer);
         auto canvasNode = context.GetNodeMap().GetRenderNode<RSRenderNode>(nodeId);
+        (void)system::SetParameter(debugKey, oldDebugValue);
         ASSERT_NE(canvasNode, nullptr);
     }
     {
         const std::string debugKey = "rosen.graphic.layerDebugEnabled";
+        const std::string oldDebugValue = system::GetParameter(debugKey, "0");
         (void)system::SetParameter(debugKey, "0");
         EXPECT_FALSE(RSSystemProperties::GetLayerDebugEnabled());
 
@@ -108,6 +111,7 @@ HWTEST_F(RSNodeCommandTest, MarkLayerTest, TestSize.Level1)
         isLayer = true;
         RSNodeCommandHelper::MarkLayer(context, nodeId, isLayer);
         auto canvasNode = context.GetNodeMap().GetRenderNode<RSRenderNode>(nodeId);
+        (void)system::SetParameter(debugKey, oldDebugValue);
         ASSERT_NE(canvasNode, nullptr);
     }
 }
