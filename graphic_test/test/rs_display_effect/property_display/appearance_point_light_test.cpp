@@ -355,8 +355,6 @@ GRAPHIC_TEST(AppearanceTest, CONTENT_DISPLAY_TEST, Appearance_PointLight_Differe
 /* Test: varying lightSource border widths */
 GRAPHIC_TEST(AppearanceTest, CONTENT_DISPLAY_TEST, Appearance_PointLight_Varying_Border_Widths)
 {
-
-
     std::vector<float> borderWidths = { 5.0f, 15.0f, 30.0f, LIGHT_HEIGHT_DEFAULT, 80.0f };
 
     for (size_t i = 0; i < borderWidths.size(); i++) {
