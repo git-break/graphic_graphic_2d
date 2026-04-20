@@ -38,7 +38,7 @@ void RSPointLightManagerTest::TearDown()
 {
     RSPointLightManager::ReleaseInstance(0);
     RSPointLightManager::ReleaseInstance(1);
-    RSPointLightManager::ReleaseInstance(2);
+    RSPointLightManager::ReleaseInstance(2); // 2 logicalDisplay Node Id
 }
 
 /**
