@@ -57,6 +57,9 @@ constexpr float PRIMARY_LIGHT_INTENSITY = 1.5f;
 constexpr float SECONDARY_LIGHT_INTENSITY = 1.0f;
 constexpr float SECONDARY_LIGHT_ALPHA = 0.5f;
 
+// Layout calculation divisor (for center position calculation)
+constexpr size_t CENTER_DIVISOR = 2;
+
 void InitSpatialPointLight(std::shared_ptr<RSNGSpatialPointLight>& spatialPointLight)
 {
     if (!spatialPointLight) {
@@ -188,7 +191,7 @@ private:
 
         // Set light position to center of current node
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, zDepth});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, zDepth});
 
         auto testNode = SetUpNodeBgImage(TEST_IMAGE_PATH, {x, y, sizeX, sizeY});
         testNode->SetBackgroundNGShader(spatialPointLight);
@@ -341,7 +344,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t x = (i % columnCount) * sizeX;
         const size_t y = (i / columnCount) * sizeY;
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, lightZDepths[i]});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, lightZDepths[i]});
 
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight, lightZDepths[i]);
     }
@@ -365,7 +368,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t x = (i % columnCount) * sizeX;
         const size_t y = (i / columnCount) * sizeY;
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, extendedZDepths[i]});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, extendedZDepths[i]});
 
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight, extendedZDepths[i]);
     }
@@ -389,7 +392,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t x = (i % columnCount) * sizeX;
         const size_t y = (i / columnCount) * sizeY;
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2 + lightXOffsets[i], y + sizeY / 2, DEFAULT_LIGHT_Z});
+            Vector3f{x + sizeX / CENTER_DIVISOR + lightXOffsets[i], y + sizeY / CENTER_DIVISOR, DEFAULT_LIGHT_Z});
 
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
     }
@@ -413,7 +416,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t x = (i % columnCount) * sizeX;
         const size_t y = (i / columnCount) * sizeY;
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2 + lightYOffsets[i], DEFAULT_LIGHT_Z});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR + lightYOffsets[i], DEFAULT_LIGHT_Z});
 
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
     }
@@ -538,7 +541,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t x = (i % columnCount) * sizeX;
         const size_t y = (i / columnCount) * sizeY;
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, extremeZDepths[i]});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, extremeZDepths[i]});
 
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
     }
@@ -922,7 +925,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t y = (i / columnCount) * sizeY;
 
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, DEFAULT_LIGHT_Z});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, DEFAULT_LIGHT_Z});
 
         auto testNode = SetUpNodeBgImage(FOREGROUND_IMAGE_PATH, {x, y, sizeX, sizeY});
         testNode->SetForegroundShader(spatialPointLight);
@@ -948,7 +951,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t y = (i / columnCount) * sizeY;
 
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, DEFAULT_LIGHT_Z});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, DEFAULT_LIGHT_Z});
 
         auto testNode = SetUpNodeBgImage(FOREGROUND_IMAGE_PATH, {x, y, sizeX, sizeY});
         testNode->SetForegroundShader(spatialPointLight);
@@ -979,7 +982,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t y = (i / columnCount) * sizeY;
 
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, DEFAULT_LIGHT_Z});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, DEFAULT_LIGHT_Z});
 
         auto testNode = SetUpNodeBgImage(FOREGROUND_IMAGE_PATH, {x, y, sizeX, sizeY});
         testNode->SetForegroundShader(spatialPointLight);
@@ -1147,8 +1150,8 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t x = (i % columnCount) * sizeX;
         const size_t y = (i / columnCount) * sizeY;
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2 + xyOffsets[i].first,
-                    y + sizeY / 2 + xyOffsets[i].second, DEFAULT_LIGHT_Z});
+            Vector3f{x + sizeX / CENTER_DIVISOR + xyOffsets[i].first,
+                    y + sizeY / CENTER_DIVISOR + xyOffsets[i].second, DEFAULT_LIGHT_Z});
 
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
     }
@@ -1178,7 +1181,7 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         const size_t x = (i % columnCount) * sizeX;
         const size_t y = (i / columnCount) * sizeY;
         spatialPointLight->Setter<SpatialPointLightLightPositionTag>(
-            Vector3f{x + sizeX / 2, y + sizeY / 2, std::get<1>(positionIntensityParams[i])});
+            Vector3f{x + sizeX / CENTER_DIVISOR, y + sizeY / CENTER_DIVISOR, std::get<1>(positionIntensityParams[i])});
         spatialPointLight->Setter<SpatialPointLightLightIntensityTag>(
             std::get<2>(positionIntensityParams[i]));
 
