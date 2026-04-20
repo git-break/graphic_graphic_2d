@@ -729,23 +729,14 @@ void InitCircleFlowlightForCascade(std::shared_ptr<RSNGCircleFlowlight>& circleF
     circleFlowlight->Setter<CircleFlowlightProgressTag>(0.5f);
 }
 
-void InitAuroraNoiseForCascade(std::shared_ptr<RSNGAuroraNoiseShader>& auroraNoise)
+void InitAuroraNoiseForCascade(std::shared_ptr<RSNGAuroraNoise>& auroraNoise)
 {
     if (!auroraNoise) {
         return;
     }
-    auroraNoise->Setter<AuroraNoiseColor1Tag>(Vector4f{0.2f, 0.4f, 0.8f, 1.0f});
-    auroraNoise->Setter<AuroraNoiseColor2Tag>(Vector4f{0.8f, 0.2f, 0.4f, 1.0f});
-    auroraNoise->Setter<AuroraNoiseColor3Tag>(Vector4f{0.4f, 0.8f, 0.2f, 1.0f});
-    auroraNoise->Setter<AuroraNoiseColor4Tag>(Vector4f{0.6f, 0.6f, 0.6f, 1.0f});
-    auroraNoise->Setter<AuroraNoiseFrequency1Tag>(3.0f);
-    auroraNoise->Setter<AuroraNoiseFrequency2Tag>(5.0f);
-    auroraNoise->Setter<AuroraNoiseFrequency3Tag>(7.0f);
-    auroraNoise->Setter<AuroraNoiseAmplitude1Tag>(0.1f);
-    auroraNoise->Setter<AuroraNoiseAmplitude2Tag>(0.05f);
-    auroraNoise->Setter<AuroraNoiseAmplitude3Tag>(0.02f);
-    auroraNoise->Setter<AuroraNoiseSpeedTag>(1.0f);
-    auroraNoise->Setter<AuroraNoiseProgressTag>(0.5f);
+    auroraNoise->Setter<AuroraNoiseNoiseTag>(0.5f);
+    auroraNoise->Setter<AuroraNoiseFreqXTag>(3.0f);
+    auroraNoise->Setter<AuroraNoiseFreqYTag>(5.0f);
 }
 
 void InitParticleCircularHaloForCascade(std::shared_ptr<RSNGParticleCircularHalo>& particleHalo)
@@ -753,13 +744,9 @@ void InitParticleCircularHaloForCascade(std::shared_ptr<RSNGParticleCircularHalo
     if (!particleHalo) {
         return;
     }
-    particleHalo->Setter<ParticleCircularHaloRadiusTag>(0.5f);
-    particleHalo->Setter<ParticleCircularHaloColorTag>(Vector4f{1.0f, 0.8f, 0.0f, 1.0f});
-    particleHalo->Setter<ParticleCircularHaloIntensityTag>(1.0f);
-    particleHalo->Setter<ParticleCircularHaloParticleCountTag>(20.0f);
-    particleHalo->Setter<ParticleCircularHaloParticleSizeTag>(5.0f);
-    particleHalo->Setter<ParticleCircularHaloRotationSpeedTag>(2.0f);
-    particleHalo->Setter<ParticleCircularHaloProgressTag>(0.5f);
+    particleHalo->Setter<ParticleCircularHaloCenterTag>(Vector2f{0.5f, 0.5f});
+    particleHalo->Setter<ParticleCircularHaloRadiusTag>(50.0f);
+    particleHalo->Setter<ParticleCircularHaloNoiseTag>(0.5f);
 }
 
 void InitWavyRippleLightForCascade(std::shared_ptr<RSNGWavyRippleLight>& wavyRipple)
@@ -767,12 +754,9 @@ void InitWavyRippleLightForCascade(std::shared_ptr<RSNGWavyRippleLight>& wavyRip
     if (!wavyRipple) {
         return;
     }
-    wavyRipple->Setter<WavyRippleLightColorTag>(Vector4f{0.0f, 1.0f, 0.8f, 1.0f});
-    wavyRipple->Setter<WavyRippleLightIntensityTag>(1.0f);
-    wavyRipple->Setter<WavyRippleLightWaveCountTag>(3.0f);
-    wavyRipple->Setter<WavyRippleLightWaveAmplitudeTag>(10.0f);
-    wavyRipple->Setter<WavyRippleLightWaveFrequencyTag>(1.0f);
-    wavyRipple->Setter<WavyRippleLightProgressTag>(0.5f);
+    wavyRipple->Setter<WavyRippleLightCenterTag>(Vector2f{0.5f, 0.5f});
+    wavyRipple->Setter<WavyRippleLightRadiusTag>(50.0f);
+    wavyRipple->Setter<WavyRippleLightThicknessTag>(10.0f);
 }
 
 // SpatialPointLight + BorderLight cascade - first order
@@ -844,15 +828,16 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
 {
     const size_t columnCount = 4;
     const size_t rowCount = 1;
+    const std::vector<float> noiseValues = {0.0f, 0.3f, 0.5f, 1.0f};
 
-    for (size_t i = 0; i < lightColors.size(); i++) {
+    for (size_t i = 0; i < noiseValues.size(); i++) {
         auto spatialPointLight = std::make_shared<RSNGSpatialPointLight>();
         InitSpatialPointLight(spatialPointLight);
-        spatialPointLight->Setter<SpatialPointLightLightColorTag>(lightColors[i]);
 
         auto particleHalo = std::make_shared<RSNGParticleCircularHalo>();
-        InitParticleCircularHaloForCascade(particleHalo);
-        particleHalo->Setter<ParticleCircularHaloColorTag>(lightColors[i]);
+        particleHalo->Setter<ParticleCircularHaloCenterTag>(Vector2f{0.5f, 0.5f});
+        particleHalo->Setter<ParticleCircularHaloRadiusTag>(50.0f);
+        particleHalo->Setter<ParticleCircularHaloNoiseTag>(noiseValues[i]);
 
         spatialPointLight->Append(particleHalo);
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
@@ -864,15 +849,21 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
 {
     const size_t columnCount = 4;
     const size_t rowCount = 1;
+    const std::vector<std::tuple<Vector2f, float, float>> wavyRippleParams = {
+        {Vector2f{0.5f, 0.5f}, 50.0f, 10.0f},
+        {Vector2f{0.3f, 0.3f}, 100.0f, 15.0f},
+        {Vector2f{0.7f, 0.7f}, 200.0f, 20.0f},
+        {Vector2f{0.0f, 0.0f}, 300.0f, 5.0f}
+    };
 
-    for (size_t i = 0; i < lightColors.size(); i++) {
+    for (size_t i = 0; i < wavyRippleParams.size(); i++) {
         auto spatialPointLight = std::make_shared<RSNGSpatialPointLight>();
         InitSpatialPointLight(spatialPointLight);
-        spatialPointLight->Setter<SpatialPointLightLightColorTag>(lightColors[i]);
 
         auto wavyRipple = std::make_shared<RSNGWavyRippleLight>();
-        InitWavyRippleLightForCascade(wavyRipple);
-        wavyRipple->Setter<WavyRippleLightColorTag>(lightColors[i]);
+        wavyRipple->Setter<WavyRippleLightCenterTag>(std::get<0>(wavyRippleParams[i]));
+        wavyRipple->Setter<WavyRippleLightRadiusTag>(std::get<1>(wavyRippleParams[i]));
+        wavyRipple->Setter<WavyRippleLightThicknessTag>(std::get<2>(wavyRippleParams[i]));
 
         spatialPointLight->Append(wavyRipple);
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
@@ -1209,11 +1200,13 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
 
 /*
  * Test spatial point light + WavyRippleLight cascade
+ * WavyRippleLight only has: Center, Radius, Thickness
  */
 GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light_Append_WavyRippleLight_Test)
 {
     const size_t columnCount = 4;
     const size_t rowCount = 1;
+    const std::vector<float> thicknessValues = {5.0f, 10.0f, 15.0f, 20.0f};
 
     for (size_t i = 0; i < lightColors.size(); i++) {
         auto spatialPointLight = std::make_shared<RSNGSpatialPointLight>();
@@ -1221,12 +1214,9 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         spatialPointLight->Setter<SpatialPointLightLightColorTag>(lightColors[i]);
 
         auto wavyRippleLight = std::make_shared<RSNGWavyRippleLight>();
-        wavyRippleLight->Setter<WavyRippleLightColorTag>(lightColors[i]);
-        wavyRippleLight->Setter<WavyRippleLightIntensityTag>(1.0f);
-        wavyRippleLight->Setter<WavyRippleLightWaveCountTag>(3.0f);
-        wavyRippleLight->Setter<WavyRippleLightWaveAmplitudeTag>(10.0f);
-        wavyRippleLight->Setter<WavyRippleLightWaveFrequencyTag>(1.0f);
-        wavyRippleLight->Setter<WavyRippleLightProgressTag>(0.5f);
+        wavyRippleLight->Setter<WavyRippleLightCenterTag>(Vector2f{0.5f, 0.5f});
+        wavyRippleLight->Setter<WavyRippleLightRadiusTag>(50.0f);
+        wavyRippleLight->Setter<WavyRippleLightThicknessTag>(thicknessValues[i]);
 
         spatialPointLight->Append(wavyRippleLight);
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
@@ -1235,11 +1225,13 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
 
 /*
  * Test spatial point light + ParticleCircularHalo cascade
+ * ParticleCircularHalo only has: Center, Radius, Noise
  */
 GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light_Append_ParticleCircularHalo_Test)
 {
     const size_t columnCount = 4;
     const size_t rowCount = 1;
+    const std::vector<float> noiseValues = {0.0f, 0.3f, 0.5f, 1.0f};
 
     for (size_t i = 0; i < lightColors.size(); i++) {
         auto spatialPointLight = std::make_shared<RSNGSpatialPointLight>();
@@ -1247,13 +1239,9 @@ GRAPHIC_TEST(NGShaderSpatialPointLightTest, EFFECT_TEST, Set_Spatial_Point_Light
         spatialPointLight->Setter<SpatialPointLightLightColorTag>(lightColors[i]);
 
         auto particleCircularHalo = std::make_shared<RSNGParticleCircularHalo>();
-        particleCircularHalo->Setter<ParticleCircularHaloRadiusTag>(0.5f);
-        particleCircularHalo->Setter<ParticleCircularHaloColorTag>(lightColors[i]);
-        particleCircularHalo->Setter<ParticleCircularHaloIntensityTag>(1.0f);
-        particleCircularHalo->Setter<ParticleCircularHaloParticleCountTag>(20.0f);
-        particleCircularHalo->Setter<ParticleCircularHaloParticleSizeTag>(5.0f);
-        particleCircularHalo->Setter<ParticleCircularHaloRotationSpeedTag>(2.0f);
-        particleCircularHalo->Setter<ParticleCircularHaloProgressTag>(0.5f);
+        particleCircularHalo->Setter<ParticleCircularHaloCenterTag>(Vector2f{0.5f, 0.5f});
+        particleCircularHalo->Setter<ParticleCircularHaloRadiusTag>(50.0f);
+        particleCircularHalo->Setter<ParticleCircularHaloNoiseTag>(noiseValues[i]);
 
         spatialPointLight->Append(particleCircularHalo);
         SetUpTestNode(i, columnCount, rowCount, spatialPointLight);
