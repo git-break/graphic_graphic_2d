@@ -2782,7 +2782,6 @@ HWTEST_F(RSRenderNodeTest, UpdateDrawingCacheInfoAfterChildrenTest004, TestSize.
     childNode->InitRenderParams();
     nodeTest->AddChild(childNode, 1);
     nodeTest->GenerateFullChildrenList();
-    bool isInBlackList = false;
 
     nodeTest->nodeGroupType_ = RSRenderNode::GROUPED_BY_USER;
     nodeTest->CheckDrawingCacheType();
